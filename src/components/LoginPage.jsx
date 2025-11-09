@@ -152,6 +152,14 @@ const LoginPage = () => {
               </button>
             </div>
 
+            <div className="login-forgot-password">
+              <a href="/login"
+              style={{ textDecoration : 'underline',
+                        fontWeight : '350',
+                        fontSize : 'Small'
+                       }}>Forgot password?</a>
+            </div>
+
             <button 
               type="submit" 
               className="login-button"

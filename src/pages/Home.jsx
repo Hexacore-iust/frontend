@@ -40,7 +40,7 @@ const Home = () => {
             href="/login"
             style={{
               padding: '12px 32px',
-              backgroundColor: '#ffa500',
+              backgroundColor: '#1abc9c',
               color: 'white',
               textDecoration: 'none',
               borderRadius: '8px',

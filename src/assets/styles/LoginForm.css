@@ -1,5 +1,5 @@
 .login-container {
-  background-image: url("../pics/bg-pics/loginsignupbg.jpg");
+  background-image: url("../pics/bg-pics/desktop.jpg");
   background-size: cover;
   background-position: center;
   min-height: 100vh;
@@ -13,7 +13,7 @@
 .login-card {
   display: flex;
   flex-direction: row-reverse;
-  background-image: url("../pics/bg-pics/login.png");
+  background-image: url("../pics/bg-pics/login.jpg");
   background-size: cover;
   position: relative;
   width: 60%;
@@ -45,7 +45,7 @@
 .login-underline {
   width: 65%;
   height: 10px;
-  background-color: #ffa500;
+  background-color: #1abc9c;
   margin: 0 auto;
 }
 
@@ -72,7 +72,7 @@
 
 .login-input:focus {
   outline: none;
-  border-color: #ffa500;
+  border-color: #1abc9c;
   box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2);
 }
 
@@ -85,19 +85,19 @@
 .login-remember input {
   width: 16px;
   height: 16px;
-  border-color: #ffa500;
-  accent-color: #ffa500;
+  border-color: #1abc9c;
+  accent-color: #1abc9c;
 }
 
 .login-remember label {
   font-size: 14px;
-  color: #ffa500;
+  color: #1abc9c;
 }
 
 .login-button {
   width: 100%;
   padding: 12px;
-  background-color: #ffa500;
+  background-color: #1abc9c;
   color: black;
   font-weight: 600;
   font-size: x-large;
@@ -108,7 +108,7 @@
 }
 
 .login-button:hover {
-  background-color: #ff8c00;
+  background-color: #069e7f;
   transform: scale(1.02);
 }
 
@@ -123,14 +123,25 @@
 }
 
 .login-login-link a {
-  color: #ffa500;
+  color: #1abc9c;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
-.login-login-link a:hover {
-  color: #ff8c00;
+.signup-login-link a:hover {
+  color: #14957b;
+}
+
+.login-forgot-password a {
+  color: #1abc9c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-forgot-password a:hover {
+  color: #14957b;
 }
 
 @media (max-width: 768px) {
