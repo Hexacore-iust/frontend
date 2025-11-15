@@ -27,7 +27,7 @@ const Home = () => {
           marginBottom: '16px',
           fontWeight: '700',
         }}>
-          Welcome to Karchin
+          به هوشیار خوش آمدید
         </h1>
         
         <div style={{
@@ -51,7 +51,7 @@ const Home = () => {
             onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
             onMouseLeave={(e) => e.target.style.transform = 'scale(1.05)'}
           >
-            Login
+            ورود
           </a>
           
           <a 
@@ -69,7 +69,7 @@ const Home = () => {
             onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
             onMouseLeave={(e) => e.target.style.transform = 'scale(1.05)'}
           >
-            Sign Up
+            ثبت نام
           </a>
         </div>
       </div>
