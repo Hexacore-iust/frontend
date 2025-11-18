@@ -135,7 +135,180 @@ const Profile = ({ onphotochange }) => {
 
   return (
     <div className="profile-page">
+      <div className="profile-card">
+        <div className="profile-card__inner">
+          {/* <button className="profile-card__back-btn" onClick={handleBack}>
+            برگشت
+          </button> */}
+
+          {/* آواتار و دکمه آپلود */}
+          <div className="profile-card__avatar-section">
+            <div className="profile-card__avatar-circle">
+              {formData.profilePicture && (
+                <img src={formData.profilePicture} alt="profile" />
+              )}
+            </div>
+            <label className="profile-card__avatar-btn">
+              اضافه کردن عکس
+              <input
+                type="file"
+                className="profile-card__file-input"
+                onChange={handleFileChange}
+              />
+            </label>
           </div>
+
+          {/* فرم اصلی */}
+          <form className="profile-card__form" onSubmit={handleSubmit}>
+            {/* ردیف ۱: نام کاربری + ایمیل */}
+            <div className="profile-card__row">
+              <div className="profile-card__field">
+                <label>نام کاربری</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="نام کاربری"
+                />
+              </div>
+              <div className="profile-card__field">
+                <label>ایمیل</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="example@mail.com"
+                />
+                {emailError && (
+                  <span className="profile-card__error">{emailError}</span>
+                )}
+              </div>
+            </div>
+
+            {/* ردیف ۲: نام + شهر */}
+            <div className="profile-card__row">
+              <div className="profile-card__field">
+                <label>نام</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="profile-card__field">
+                <label>شهر</label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* ردیف ۳: جنسیت + تاریخ تولد */}
+            <div className="profile-card__row">
+              <div className="profile-card__field">
+                <label>جنسیت</label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                >
+                  <option value="">انتخاب کنید</option>
+                  <option value="Male">مرد</option>
+                  <option value="Female">زن</option>
+                  <option value="Other">سایر</option>
+                </select>
+              </div>
+              <div className="profile-card__field">
+                <label>تاریخ تولد</label>
+                <input
+                  type="date"
+                  name="birthDate"
+                  value={formData.birthDate}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {/* ردیف ۴: رمز فعلی + رمز جدید (مثل دو فیلد پایین فیگما) */}
+            <div className="profile-card__row">
+              <div className="profile-card__field profile-card__field--password">
+                <label>رمز عبور فعلی</label>
+                <div className="profile-card__password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="currentPassword"
+                    value={formData.currentPassword}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    className="profile-card__eye-btn"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <FaEye /> : <FaEyeSlash />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="profile-card__field profile-card__field--password">
+                <label>رمز عبور جدید</label>
+                <div className="profile-card__password-wrapper">
+                  <input
+                    type={showPassword2 ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    className="profile-card__eye-btn"
+                    onClick={togglePasswordVisibility2}
+                  >
+                    {showPassword2 ? <FaEye /> : <FaEyeSlash />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* متن راهنما پایین فرم*/}
+            <p className="profile-card__description">
+              به دستیار هوشمند کمک کن! با بارگذاری و تکمیل اطلاعات شخصی خود، به
+              مدل هوش مصنوعی ما کمک می‌کنید تا تحلیل‌ها و پیشنهادهای ارائه‌شده
+              را بر اساس ویژگی‌ها، نیازها و اهداف فردی شما به‌صورت دقیق‌تر و
+              شخصی‌سازی‌شده تنظیم کند. تمامی داده‌های واردشده صرفاً برای بهبود
+              کیفیت تجربه کاربری استفاده می‌شوند و مطابق با اصول محرمانگی و حریم
+              خصوصی نگهداری خواهند شد.
+            </p>
+
+            {/* دکمه‌ها */}
+            <div className="profile-card__actions">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={handleCancel}
+              >
+                انصراف
+              </button>
+              <button type="submit" className="btn btn--primary">
+                ثبت
+              </button>
+            </div>
+
+            {success && (
+              <div className="profile-card__success">
+                اطلاعات پروفایل با موفقیت ذخیره شد.
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    </div>
   );
 };
 
