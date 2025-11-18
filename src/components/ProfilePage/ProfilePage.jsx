@@ -26,7 +26,6 @@ const Profile = ({ onphotochange }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // فقط برای تست؛ بعداً URL واقعی API را بگذار
   const getFormData = async () => {
     try {
       const response = await axios.get("", {
