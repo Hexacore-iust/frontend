@@ -289,13 +289,13 @@ const Profile = ({ onphotochange }) => {
 
             {/* دکمه‌ها */}
             <div className="profile-card__actions">
-              <button
+              {/* <button
                 type="button"
                 className="btn btn--secondary"
                 onClick={handleCancel}
               >
                 انصراف
-              </button>
+              </button> */}
               <button type="submit" className="btn btn--primary">
                 ثبت
               </button>
