@@ -146,15 +146,17 @@ const Profile = ({ onphotochange }) => {
               {formData.profilePicture && (
                 <img src={formData.profilePicture} alt="profile" />
               )}
+              <div className="profile-card__avatar-btn">
+                <span className={`change-button `}>
+                  <input
+                    type="file"
+                    className="profile-card__file-input"
+                    onChange={handleFileChange}
+                  />
+                  +
+                </span>
+              </div>
             </div>
-            <label className="profile-card__avatar-btn">
-              اضافه کردن عکس
-              <input
-                type="file"
-                className="profile-card__file-input"
-                onChange={handleFileChange}
-              />
-            </label>
           </div>
 
           {/* فرم اصلی */}
