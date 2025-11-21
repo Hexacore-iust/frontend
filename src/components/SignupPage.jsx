@@ -107,7 +107,7 @@ const SignupPage = () => {
       <div className="signup-card">
         <div className="signup-content">
           <div className="signup-title">
-            <h1>Signup</h1>
+            <h1>ثبت نام</h1>
             <div className="signup-underline"></div>
           </div>
 
@@ -141,7 +141,7 @@ const SignupPage = () => {
             <div className="signup-input-group">
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="نام کاربری"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="signup-input"
@@ -152,7 +152,7 @@ const SignupPage = () => {
             <div className="signup-input-group">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="ایمیل"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="signup-input"
@@ -163,7 +163,7 @@ const SignupPage = () => {
             <div className="signup-input-group" style={{ position: 'relative' }}>
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder="رمز عبور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="signup-input"
@@ -191,7 +191,7 @@ const SignupPage = () => {
             <div className="signup-input-group" style={{ position: 'relative' }}>
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm Password"
+                placeholder="تایید رمز عبور"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="signup-input"
@@ -223,7 +223,7 @@ const SignupPage = () => {
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
-              <label htmlFor="rememberMe">Remember me</label>
+              <label htmlFor="rememberMe">مرا به خاطر بسپار</label>
             </div>
 
             <button 
@@ -231,11 +231,11 @@ const SignupPage = () => {
               className="signup-button"
               disabled={loading}
             >
-              {loading ? 'Signing up...' : 'Signup'}
+              {loading ? 'در حال ثبت نام...' : 'ثبت نام'}
             </button>
 
             <div className="signup-login-link">
-              <a href="/login" style={{ textDecoration : 'underline' }}>Already have an account?</a>
+              <a href="/login" style={{ textDecoration : 'underline' }}>حساب کاربری دارید؟</a>
             </div>
           </form>
         </div>

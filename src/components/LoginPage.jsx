@@ -82,7 +82,7 @@ const LoginPage = () => {
       <div className="login-card">
         <div className="login-info">
           <div className="login-title">
-            <h1>Login</h1>
+            <h1>ورود</h1>
             <div className="login-underline"></div>
           </div>
 
@@ -116,7 +116,7 @@ const LoginPage = () => {
             <div className="login-input-group">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="ایمیل"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="login-input"
@@ -127,7 +127,7 @@ const LoginPage = () => {
             <div className="login-input-group" style={{ position: 'relative' }}>
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder="رمز عبور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="login-input"
@@ -157,7 +157,7 @@ const LoginPage = () => {
               style={{ textDecoration : 'underline',
                         fontWeight : '350',
                         fontSize : 'Small'
-                       }}>Forgot password?</a>
+                       }}>رمز عبور خود را فراموش کرده‌اید؟</a>
             </div>
 
             <button 
@@ -165,11 +165,11 @@ const LoginPage = () => {
               className="login-button"
               disabled={loading}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'در حال ورود...' : 'ورود'}
             </button>
 
             <div className="signup-login-link">
-              <a href="/signup" style={{ textDecoration : 'underline' }}>Don't have an account?</a>
+              <a href="/signup" style={{ textDecoration : 'underline' }}>ثبت نام نکرده‌اید؟</a>
             </div>
           </form>
         </div>
