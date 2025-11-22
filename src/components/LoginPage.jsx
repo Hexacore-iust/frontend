@@ -77,12 +77,32 @@ const LoginPage = () => {
     }
   };
 
+  // Function to handle forgot password
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setError('لطفاً ایمیل خود را وارد کنید');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('لطفاً یک ایمیل معتبر وارد کنید');
+      return;
+    }
+
+    // Redirect to OTP page with email as query parameter
+    window.location.href = `/otp-verification?email=${encodeURIComponent(email)}`;
+  };
+
   return (
     <div className="login-container">
       <div className="login-card">
         <div className="login-info">
           <div className="login-title">
-            <h1>Login</h1>
+            <h1>ورود</h1>
             <div className="login-underline"></div>
           </div>
 
@@ -116,7 +136,7 @@ const LoginPage = () => {
             <div className="login-input-group">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="ایمیل"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="login-input"
@@ -127,7 +147,7 @@ const LoginPage = () => {
             <div className="login-input-group" style={{ position: 'relative' }}>
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder="رمز عبور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="login-input"
@@ -153,11 +173,17 @@ const LoginPage = () => {
             </div>
 
             <div className="login-forgot-password">
-              <a href="/login"
-              style={{ textDecoration : 'underline',
-                        fontWeight : '350',
-                        fontSize : 'Small'
-                       }}>Forgot password?</a>
+              <a 
+                href="#"
+                style={{ 
+                  textDecoration : 'underline',
+                  fontWeight : '350',
+                  fontSize : 'Small'
+                }}
+                onClick={handleForgotPassword}
+              >
+                رمز عبور خود را فراموش کرده‌اید؟
+              </a>
             </div>
 
             <button 
@@ -165,11 +191,11 @@ const LoginPage = () => {
               className="login-button"
               disabled={loading}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'در حال ورود...' : 'ورود'}
             </button>
 
             <div className="signup-login-link">
-              <a href="/signup" style={{ textDecoration : 'underline' }}>Don't have an account?</a>
+              <a href="/signup" style={{ textDecoration : 'underline' }}>ثبت نام نکرده‌اید؟</a>
             </div>
           </form>
         </div>
