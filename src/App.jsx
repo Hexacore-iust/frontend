@@ -5,7 +5,7 @@ import Landing from './pages/Landing';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import OTPVerification from './components/OTPPage';
-import Home from "./pages/Home";
+// import Home from "./pages/Home";
 import Profile from "./components/ProfilePage/ProfilePage";
 
 const App = () => {
