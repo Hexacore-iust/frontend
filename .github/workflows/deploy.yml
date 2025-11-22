@@ -42,10 +42,11 @@ jobs:
           name: vite-build
           path: dist
 
-      # Deploy
-      # - name: Copy files to server
-      #   run: |
-      #     scp -r dist/* user@yourserver:/var/www/html
+      - name: Deploy to Liara
+        env:
+          LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
+        run: |
+          liara deploy --app="hoshyar" --api-token="$LIARA_TOKEN" --no-app-logs
 
       - name: Complete message
         run: echo "Deployment finished."
