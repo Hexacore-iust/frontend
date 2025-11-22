@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Home = () => {
+const Landing = () => {
   return (
     <div className="home-container" style={{
       minHeight: '100vh',
@@ -77,4 +77,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Landing;

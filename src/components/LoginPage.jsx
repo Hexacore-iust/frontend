@@ -77,6 +77,26 @@ const LoginPage = () => {
     }
   };
 
+  // Function to handle forgot password
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setError('لطفاً ایمیل خود را وارد کنید');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('لطفاً یک ایمیل معتبر وارد کنید');
+      return;
+    }
+
+    // Redirect to OTP page with email as query parameter
+    window.location.href = `/otp-verification?email=${encodeURIComponent(email)}`;
+  };
+
   return (
     <div className="login-container">
       <div className="login-card">
@@ -153,11 +173,17 @@ const LoginPage = () => {
             </div>
 
             <div className="login-forgot-password">
-              <a href="/login"
-              style={{ textDecoration : 'underline',
-                        fontWeight : '350',
-                        fontSize : 'Small'
-                       }}>رمز عبور خود را فراموش کرده‌اید؟</a>
+              <a 
+                href="#"
+                style={{ 
+                  textDecoration : 'underline',
+                  fontWeight : '350',
+                  fontSize : 'Small'
+                }}
+                onClick={handleForgotPassword}
+              >
+                رمز عبور خود را فراموش کرده‌اید؟
+              </a>
             </div>
 
             <button 
