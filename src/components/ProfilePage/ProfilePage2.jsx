@@ -5,16 +5,13 @@ import Button from "@mui/material/Button";
 import CustomDatePicker from "../DatePicker/datePicker";
 import axios from "axios";
 import { baseUrl } from "../../config";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ChangePassword from "../ChangePassword/ChangePassword";
 import "./ProfilePage2.scss";
 
 const Profile2 = () => {
   const [date, setDate] = React.useState(dayjs(Date()));
+  const [emailError, setEmailError] = useState("");
+
   const [formData, setFormData] = useState({
     profilePicture: "",
     username: "",
@@ -41,17 +38,7 @@ const Profile2 = () => {
     job,
   } = formData;
 
-  const [password, setPassword] = useState({
-    currentPassword: "",
-    newPassword: "",
-    repeatedPassword: "",
-  });
-
-  const { currentPassword, newPassword, repeatedPassword } = password;
-
   const [files, setFiles] = useState([]);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordBox, setShowPasswordBox] = useState(true);
 
   const token = localStorage.getItem("token");
 
@@ -86,7 +73,14 @@ const Profile2 = () => {
   };
 
   const setProfile = () => {
-    axios.patch(`${baseUrl}/api/auth/profile/update/`, formData, {
+    const bodyResponse = {
+      first_name: firstName,
+      last_name: lastName,
+      age: +age,
+      gender: gender,
+      phone_number: phoneNumber,
+    };
+    axios.patch(`${baseUrl}/api/auth/profile/update/`, bodyResponse, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -98,22 +92,23 @@ const Profile2 = () => {
     //getProfile();
   }, []);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleShowPasswordBox = () => {
-    setShowPasswordBox((showPasswordBox) => !showPasswordBox);
-    console.log("password", showPasswordBox);
+  const handleEmailValidation = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError("ایمیل باید به فرمت user@example.com باشد!");
+      return false;
+    }
+    setPasswordError("");
+    return true;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    if (e.target.name === "email") {
+      handleEmailValidation(value);
+      console.log(emailError);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-    setPassword((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
@@ -122,6 +117,7 @@ const Profile2 = () => {
 
   const handleSubmitPassword = (e) => {
     e.preventDefault();
+    setProfile();
     console.log("Password submitted", formData);
   };
 
@@ -168,7 +164,7 @@ const Profile2 = () => {
           {/* Profile Form */}
           <form className="profile-card__form" onSubmit={handleSubmit}>
             {/* Username, Email, Phone Number */}
-            <label className="profile-card__header">اطلاعات حساب کاربری</label>
+            <h5 className="profile-card__header">اطلاعات حساب کاربری</h5>
             <div className="profile-card__container">
               <TextField
                 required
@@ -207,7 +203,7 @@ const Profile2 = () => {
             </div>
 
             {/* Personal Information */}
-            <label className="profile-card__header">اطلاعات شخصی</label>
+            <h5 className="profile-card__header">اطلاعات شخصی</h5>
             <div className="profile-card__container">
               <TextField
                 name="firstName"
@@ -266,127 +262,12 @@ const Profile2 = () => {
                 label={"تاریخ تولد"}
               />
             </div>
-
-            {/* Password Fields */}
-            <label className="profile-card__header">
-              تغییر رمز عبور
-              {showPasswordBox ? (
-                <ExpandMoreIcon onClick={handleShowPasswordBox} />
-              ) : (
-                <ExpandLessIcon onClick={handleShowPasswordBox} />
-              )}
-            </label>
-            {showPasswordBox ? (
-              <></>
-            ) : (
-              <div className="profile-card__container-password">
-                <TextField
-                  name="currentPassword"
-                  label="رمز عبور"
-                  type={showPassword ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => handlePasswordChange(e)}
-                  fullWidth
-                  margin="normal"
-                  size="small"
-                  sx={{ input: { color: "#777" } }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={
-                            showPassword
-                              ? "hide the password"
-                              : "display the password"
-                          }
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-
-                <TextField
-                  name="newPassword"
-                  label="رمزعبور جدید"
-                  type={showPassword ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => handlePasswordChange(e)}
-                  fullWidth
-                  margin="normal"
-                  size="small"
-                  sx={{ input: { color: "#777" } }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={
-                            showPassword
-                              ? "hide the password"
-                              : "display the password"
-                          }
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-
-                <TextField
-                  name="repeatedPassword"
-                  label="تکرار رمزعبور"
-                  type={showPassword ? "text" : "password"}
-                  value={repeatedPassword}
-                  onChange={(e) => handlePasswordChange(e)}
-                  fullWidth
-                  margin="normal"
-                  size="small"
-                  sx={{ input: { color: "#777" } }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label={
-                            showPassword
-                              ? "hide the password"
-                              : "display the password"
-                          }
-                          onClick={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-
-                <Button
-                  type="cancel"
-                  variant="contained"
-                  style={{
-                    backgroundColor: "#ff9d00",
-                    width: "90px",
-                    marginTop: "1rem",
-                  }}
-                >
-                  تغییر پسورد
-                </Button>
-              </div>
-            )}
-
             {/* File Upload Section */}
             <div className="file-upload">
-              <label className="profile-card__header">
+              <h5 className="profile-card__header">
                 {" "}
                 به دستیار هوشمند کمک کن!
-              </label>
+              </h5>
               <p>
                 با بارگذاری و تکمیل اطلاعات شخصی خود، به مدل هوش مصنوعی ما کمک
                 می‌کنید تا تحلیل‌ها و پیشنهادهای ارائه‌شده را بر اساس ویژگی‌ها،
@@ -416,7 +297,7 @@ const Profile2 = () => {
                 <Button
                   variant="contained"
                   component="span"
-                  style={{ backgroundColor: "#00c48c", width: "90px" }}
+                  style={{ backgroundColor: "#00c48c" }}
                 >
                   اپلود فایل
                 </Button>
@@ -430,8 +311,6 @@ const Profile2 = () => {
                 variant="contained"
                 style={{
                   backgroundColor: "#00c48c",
-                  width: "auto",
-                  marginTop: "1rem",
                 }}
               >
                 ثبت اطلاعات
@@ -441,14 +320,14 @@ const Profile2 = () => {
                 onClick={handleCancel}
                 style={{
                   backgroundColor: "#ff9d00",
-                  width: "auto",
-                  marginTop: "1rem",
                 }}
               >
                 حذف تغییرات
               </Button>
             </div>
           </form>
+          {/* Password Fields */}
+          <ChangePassword />
         </div>
       </div>
     </div>
