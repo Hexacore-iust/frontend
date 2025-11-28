@@ -1,12 +1,13 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import Landing from './pages/Landing';
-import LoginPage from './components/LoginPage';
-import SignupPage from './components/SignupPage';
-import OTPVerification from './components/OTPPage';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Landing from "./pages/Landing";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
+import OTPVerification from "./components/OTPPage";
 // import Home from "./pages/Home";
-import Profile from "./components/ProfilePage/ProfilePage";
+// import Profile from "./components/ProfilePage/ProfilePage";
+import Profile2 from "./components/ProfilePage/ProfilePage2";
 
 const App = () => {
   return (
@@ -17,8 +18,12 @@ const App = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/otp-verification" element={<OTPVerification email="user@example.com" />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/otp-verification"
+            element={<OTPVerification email="user@example.com" />}
+          />
+          {/* <Route path="/profile" element={<Profile />} /> */}
+          <Route path="/profile2" element={<Profile2 />} />
         </Routes>
       </div>
     </Router>
