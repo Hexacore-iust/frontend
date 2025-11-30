@@ -1,80 +1,21 @@
-import React from 'react';
+import React from "react";
+
+import HomeHeader from "../components/HeaderLanding";
+import HeroSection from "../components/landing/landing1";
+import WhySection from "../components/landing/landing2";
+import TeamSection from "../components/landing/landing3";
+import Footer from "../components/Footer";
 
 const Landing = () => {
   return (
-    <div className="home-container" style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-    }}>
-      
-      <div style={{
-        textAlign: 'center',
-        maxWidth: '600px',
-        padding: '40px',
-        backgroundColor: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
-        marginTop: '20px',
-      }}>
-        <h1 style={{
-          fontSize: '2.5rem',
-          color: '#1f2937',
-          marginBottom: '16px',
-          fontWeight: '700',
-        }}>
-          به هوشیار خوش آمدید
-        </h1>
-        
-        <div style={{
-          display: 'flex',
-          gap: '16px',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}>
-          <a 
-            href="/login"
-            style={{
-              padding: '12px 32px',
-              backgroundColor: '#1abc9c',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '600',
-              fontSize: '1rem',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.target.style.transform = 'scale(1.05)'}
-          >
-            ورود
-          </a>
-          
-          <a 
-            href="/signup"
-            style={{
-              padding: '12px 32px',
-              backgroundColor: '#1f2937',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '600',
-              fontSize: '1rem',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.target.style.transform = 'scale(1.05)'}
-          >
-            ثبت نام
-          </a>
-        </div>
-      </div>
-    </div>
+    <>
+      <HomeHeader />
+      <HeroSection />
+      <WhySection />
+      <TeamSection />
+      <Footer />
+    </>
   );
 };
 
-export default Landing;
+export default Landing; 
