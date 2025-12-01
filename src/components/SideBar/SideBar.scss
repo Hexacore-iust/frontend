@@ -3,27 +3,26 @@ $hover-color: #357a6e;
 $border-color: #e0e0e0;
 $text-muted: #777;
 
-.sidebar-layout {
-  display: flex;
-}
+// .sidebar-layout {
+//   display: flex;
 
-/* fixed sidebar container */
+// }
+
 .sidebar {
   position: fixed;
-  height: 100%;
   background-color: $bg-color;
   color: #ffffff;
   transition: width 0.3s ease;
   overflow: hidden;
-
-  width: 5rem;
-
+  top: 0;
+  width: 80px;
+  height: 100%;
   &--open {
-    width: 16rem;
+    width: 256px;
   }
 
   &--closed {
-    width: 5rem;
+    width: 80px;
   }
 
   @media (min-width: 768px) {
@@ -31,28 +30,25 @@ $text-muted: #777;
   }
 }
 
-/* header with title and toggle button */
 .sidebar__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem; // p-4
+  padding: 1rem;
+  margin-top: 56px;
 }
 
-/* text-xl font-bold + visibility behavior */
 .sidebar__title {
-  font-size: 1.25rem; // text-xl
+  font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 700;
 
-  // mobile: hidden when sidebar is closed
   display: none;
 
   .sidebar--open & {
     display: block;
   }
 
-  // md and up: always visible
   @media (min-width: 768px) {
     display: block;
   }
@@ -83,7 +79,7 @@ $text-muted: #777;
 .sidebar__item {
   display: flex;
   align-items: center;
-  padding: 1rem; // p-4
+  padding: 1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
