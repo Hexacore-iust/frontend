@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import CustomDatePicker from "../DatePicker/datePicker";
+import CustomDatePicker from "../DatePicker/DatePicker";
 import axios from "axios";
 import { baseUrl } from "../../config";
 import ChangePassword from "../ChangePassword/ChangePassword";
