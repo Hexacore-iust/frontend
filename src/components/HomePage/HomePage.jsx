@@ -1,7 +1,8 @@
-// HomePage.jsx
 import React, { useRef, useState, useEffect } from "react";
 import "./HomePage.scss";
 import SideBar from "../SideBar/SideBar";
+import HomeHeader from "../Header";
+import Footer from "../Footer";
 
 const HomePage = () => {
   const elementRef = useRef(null);
@@ -14,30 +15,34 @@ const HomePage = () => {
 
   useEffect(() => {
     updateWidth();
-  }, [elementRef.current]);
+  }, []);
   console.log("width", width);
   console.log("elementRef", elementRef.current?.clientWidth);
   return (
     <div style={{ position: "relative" }}>
       <div
         style={{
-          height: "56px",
-          backgroundColor: "black",
-          zIndex: "1",
           position: "relative",
         }}
       >
-        Header
+        <HomeHeader />
       </div>
-      <div style={{ display: "flex", flexDirection: "row", gap: "16px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "16px",
+          marginTop: "8px",
+        }}
+      >
         <div>
           <SideBar sidebarRef={elementRef} />
         </div>
         <div
           style={{
-            marginRight: `${width}px`,
+            // marginRight: `${width}px`,
             width: "100%",
-            // height: "100vh",
+            height: "100vh",
             backgroundColor: "blue",
           }}
         >
@@ -46,18 +51,13 @@ const HomePage = () => {
       </div>
       <div
         style={{
-          height: "56px",
-          backgroundColor: "red",
           zIndex: "1",
           position: "relative",
         }}
       >
-        footer
+        <Footer />
       </div>
     </div>
-    // <div className="main-content">
-
-    // </div>
   );
 };
 

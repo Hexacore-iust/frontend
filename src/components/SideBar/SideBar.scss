@@ -1,19 +1,19 @@
-$bg-color: #1dc9a0;
-$hover-color: #357a6e;
+$bg-color: #d1fadf;
+$hover-color: #1dc9a0;
 $border-color: #e0e0e0;
 $text-muted: #777;
+$font-color: #357a6e;
 
 // .sidebar-layout {
 //   display: flex;
-
 // }
 
 .sidebar {
-  position: fixed;
+  // position: fixed;
   background-color: $bg-color;
-  color: #ffffff;
+  color: $font-color;
   transition: width 0.3s ease;
-  overflow: hidden;
+  // overflow: hidden;
   top: 0;
   width: 80px;
   height: 100%;
@@ -26,7 +26,8 @@ $text-muted: #777;
   }
 
   @media (min-width: 768px) {
-    width: 16rem;
+    width: 256px;
+    transform: none;
   }
 }
 
@@ -34,14 +35,14 @@ $text-muted: #777;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  margin-top: 56px;
+  padding-right: 8px;
 }
 
 .sidebar__title {
   font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 700;
+  margin-bottom: 16px;
 
   display: none;
 
@@ -58,7 +59,7 @@ $text-muted: #777;
   border: none;
   cursor: pointer;
   display: block;
-  color: #ffffff;
+  color: $font-color;
 
   @media (min-width: 768px) {
     display: none;
@@ -78,13 +79,16 @@ $text-muted: #777;
 
 .sidebar__item {
   display: flex;
+  height: 60px;
   align-items: center;
-  padding: 1rem;
+  margin: 0 0 16px 0;
+  padding-right: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
   &:hover {
     background-color: $hover-color;
+    color: #fff;
   }
 }
 
