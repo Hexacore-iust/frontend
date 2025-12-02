@@ -1,13 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import OTPVerification from "./components/OTPPage";
-import Profile from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
-import SideBar from "./components/SideBar/SideBar";
 
 const App = () => {
   return (
@@ -22,9 +19,7 @@ const App = () => {
             path="/otp-verification"
             element={<OTPVerification email="user@example.com" />}
           />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/homepage" element={<HomePage />} />
-          <Route path="/sidebar" element={<SideBar />} />
         </Routes>
       </div>
     </Router>

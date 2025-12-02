@@ -1,10 +1,42 @@
 import React, { useRef, useState, useEffect } from "react";
+import { FaHome, FaUserAlt, FaRobot, FaTasks } from "react-icons/fa";
+// import { GiArtificialIntelligence  } from "react-icons/gi";
 import "./HomePage.scss";
 import SideBar from "../SideBar/SideBar";
+import Profile from "../ProfilePage/ProfilePage";
+import Dashboard from "../Dashboard/Dashboard";
 import HomeHeader from "../Header";
 import Footer from "../Footer";
 
 const HomePage = () => {
+  const [contentType, setContentType] = useState();
+  const navItems = [
+    {
+      id: "dashboard",
+      label: "خانه",
+      icon: FaHome,
+    },
+    {
+      id: "profile",
+      label: "پروفایل",
+      icon: FaUserAlt,
+    },
+    {
+      id: "assistant",
+      label: "دستیار هوشمند",
+      icon: FaRobot,
+    },
+    {
+      id: "tasks",
+      label: "برنامه ها",
+      icon: FaTasks,
+    },
+  ];
+
+  const handleNavClick = (id) => {
+    setContentType(id);
+  };
+
   const elementRef = useRef(null);
   const [width, setWidth] = useState(0);
   const updateWidth = () => {
@@ -12,6 +44,25 @@ const HomePage = () => {
       setWidth(elementRef.current?.clientWidth);
     }
   };
+  let content;
+  switch (contentType) {
+    case "dashboard":
+      content = <Dashboard />;
+      break;
+    case "profile":
+      content = <Profile />;
+      break;
+    case "assistant":
+      // content = <AssistantPage />;
+      content = <></>;
+      break;
+    case "tasks":
+      // content = <TasksPage />;
+      content = <></>;
+      break;
+    default:
+      content = <Dashboard />;
+  }
 
   useEffect(() => {
     updateWidth();
@@ -36,17 +87,22 @@ const HomePage = () => {
         }}
       >
         <div>
-          <SideBar sidebarRef={elementRef} />
+          <SideBar
+            sidebarRef={elementRef}
+            navItems={navItems}
+            handleNavClick={handleNavClick}
+            contentType={contentType}
+          />
         </div>
-        <div
+        {/* <div
           style={{
             // marginRight: `${width}px`,
             width: "100%",
             height: "100vh",
           }}
-        >
-          content
-        </div>
+        > */}
+        {content}
+        {/* </div> */}
       </div>
       <div
         style={{

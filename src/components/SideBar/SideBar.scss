@@ -4,19 +4,16 @@ $border-color: #e0e0e0;
 $text-muted: #777;
 $font-color: #357a6e;
 
-// .sidebar-layout {
-//   display: flex;
-// }
-
 .sidebar {
   // position: fixed;
-  background-color: $bg-color;
-  color: $font-color;
-  transition: width 0.3s ease;
   // overflow: hidden;
   // top: 0;
   // width: 80px;
-  height: 100%;
+  background-color: $bg-color;
+  color: $font-color;
+  transition: width 0.3s ease;
+  border-radius: 16px;
+  height: 99%;
   &--open {
     width: 256px;
   }
@@ -43,6 +40,7 @@ $font-color: #357a6e;
 .sidebar__title {
   font-size: 1.25rem;
   line-height: 1.75rem;
+
   font-weight: 700;
   margin-bottom: 16px;
   margin: 8px;

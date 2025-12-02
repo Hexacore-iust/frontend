@@ -144,191 +144,185 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-page">
-      <div className="profile-card">
-        <div className="profile-card__inner">
-          {/* User Avatar Section */}
-          <div className="profile-card__avatar-section">
-            <div className="profile-card__avatar-circle">
-              {formData.profilePicture && (
-                <img src={formData.profilePicture} alt="profile" />
-              )}
-              <div className="profile-card__avatar-btn">
-                <span className="change-button">
-                  <input className="profile-card__file-input" type="file" />+
-                </span>
-              </div>
+    <div className="profile-card">
+      <div className="profile-card__inner">
+        {/* User Avatar Section */}
+        <div className="profile-card__avatar-section">
+          <div className="profile-card__avatar-circle">
+            {formData.profilePicture && (
+              <img src={formData.profilePicture} alt="profile" />
+            )}
+            <div className="profile-card__avatar-btn">
+              <span className="change-button">
+                <input className="profile-card__file-input" type="file" />+
+              </span>
             </div>
           </div>
-
-          {/* Profile Form */}
-          <form className="profile-card__form" onSubmit={handleSubmit}>
-            {/* Username, Email, Phone Number */}
-            <h5 className="profile-card__header">اطلاعات حساب کاربری</h5>
-            <div className="profile-card__container">
-              <TextField
-                required
-                // disabled
-                // id="email"
-                name="email"
-                label="ایمیل"
-                value={email}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-              <TextField
-                required
-                name="username"
-                label="نام کاربری"
-                value={username}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-              <TextField
-                name="phoneNumber"
-                label="تلفن همراه"
-                value={phoneNumber}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-            </div>
-
-            {/* Personal Information */}
-            <h5 className="profile-card__header">اطلاعات شخصی</h5>
-            <div className="profile-card__container">
-              <TextField
-                name="firstName"
-                label="نام"
-                value={firstName}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-              <TextField
-                name="lastName"
-                label="نام خانوادگی"
-                value={lastName}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-              <TextField
-                name="gender"
-                label="جنسیت"
-                value={gender}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-
-              <TextField
-                name="city"
-                label="شهر محل زندگی"
-                value={city}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-              <TextField
-                name="job"
-                label="شغل"
-                value={job}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                margin="normal"
-                size="small"
-                sx={{ input: { color: "#777" } }}
-              />
-              <CustomDatePicker
-                dateValue={date}
-                setDateValue={setDate}
-                label={"تاریخ تولد"}
-              />
-            </div>
-            {/* File Upload Section */}
-            <div className="file-upload">
-              <h5 className="profile-card__header">
-                {" "}
-                به دستیار هوشمند کمک کن!
-              </h5>
-              <p>
-                با بارگذاری و تکمیل اطلاعات شخصی خود، به مدل هوش مصنوعی ما کمک
-                می‌کنید تا تحلیل‌ها و پیشنهادهای ارائه‌شده را بر اساس ویژگی‌ها،
-                نیازها و اهداف فردی شما به‌صورت دقیق‌تر و شخصی‌سازی‌شده تنظیم
-                کند. تمامی داده‌های واردشده صرفاً برای بهبود کیفیت تجربه کاربری
-                استفاده می‌شوند و مطابق با اصول محرمانگی و حریم خصوصی نگهداری
-                خواهند شد.
-              </p>
-              <input
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                style={{ display: "none" }}
-                id="file-upload-input"
-              />
-              {/* Display selected file names */}
-              <div>
-                {files.length > 0 && (
-                  <ul>
-                    {Array.from(files).map((file, index) => (
-                      <li key={index}>{file.name}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <label htmlFor="file-upload-input">
-                <Button
-                  variant="contained"
-                  component="span"
-                  style={{ backgroundColor: "#00c48c" }}
-                >
-                  اپلود فایل
-                </Button>
-              </label>
-            </div>
-
-            {/* Submit Button */}
-            <div className="form-submit">
-              <Button
-                type="submit"
-                variant="contained"
-                style={{
-                  backgroundColor: "#00c48c",
-                }}
-              >
-                ثبت اطلاعات
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleCancel}
-                style={{
-                  backgroundColor: "#ff9d00",
-                }}
-              >
-                حذف تغییرات
-              </Button>
-            </div>
-          </form>
-          {/* Password Fields */}
-          <ChangePassword />
         </div>
+
+        {/* Profile Form */}
+        <form className="profile-card__form" onSubmit={handleSubmit}>
+          {/* Username, Email, Phone Number */}
+          <h5 className="profile-card__header">اطلاعات حساب کاربری</h5>
+          <div className="profile-card__container">
+            <TextField
+              required
+              // disabled
+              // id="email"
+              name="email"
+              label="ایمیل"
+              value={email}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+            <TextField
+              required
+              name="username"
+              label="نام کاربری"
+              value={username}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+            <TextField
+              name="phoneNumber"
+              label="تلفن همراه"
+              value={phoneNumber}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+          </div>
+
+          {/* Personal Information */}
+          <h5 className="profile-card__header">اطلاعات شخصی</h5>
+          <div className="profile-card__container">
+            <TextField
+              name="firstName"
+              label="نام"
+              value={firstName}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+            <TextField
+              name="lastName"
+              label="نام خانوادگی"
+              value={lastName}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+            <TextField
+              name="gender"
+              label="جنسیت"
+              value={gender}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+
+            <TextField
+              name="city"
+              label="شهر محل زندگی"
+              value={city}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+            <TextField
+              name="job"
+              label="شغل"
+              value={job}
+              onChange={(e) => handleChange(e)}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
+            <CustomDatePicker
+              dateValue={date}
+              setDateValue={setDate}
+              label={"تاریخ تولد"}
+            />
+          </div>
+          {/* File Upload Section */}
+          <div className="file-upload">
+            <h5 className="profile-card__header"> به دستیار هوشمند کمک کن!</h5>
+            <p>
+              با بارگذاری و تکمیل اطلاعات شخصی خود، به مدل هوش مصنوعی ما کمک
+              می‌کنید تا تحلیل‌ها و پیشنهادهای ارائه‌شده را بر اساس ویژگی‌ها،
+              نیازها و اهداف فردی شما به‌صورت دقیق‌تر و شخصی‌سازی‌شده تنظیم کند.
+              تمامی داده‌های واردشده صرفاً برای بهبود کیفیت تجربه کاربری استفاده
+              می‌شوند و مطابق با اصول محرمانگی و حریم خصوصی نگهداری خواهند شد.
+            </p>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              id="file-upload-input"
+            />
+            {/* Display selected file names */}
+            <div>
+              {files.length > 0 && (
+                <ul>
+                  {Array.from(files).map((file, index) => (
+                    <li key={index}>{file.name}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <label htmlFor="file-upload-input">
+              <Button
+                variant="contained"
+                component="span"
+                style={{ backgroundColor: "#00c48c" }}
+              >
+                اپلود فایل
+              </Button>
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <div className="form-submit">
+            <Button
+              type="submit"
+              variant="contained"
+              style={{
+                backgroundColor: "#00c48c",
+              }}
+            >
+              ثبت اطلاعات
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleCancel}
+              style={{
+                backgroundColor: "#ff9d00",
+              }}
+            >
+              حذف تغییرات
+            </Button>
+          </div>
+        </form>
+        {/* Password Fields */}
+        <ChangePassword />
       </div>
     </div>
   );
