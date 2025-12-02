@@ -5,9 +5,7 @@ import Landing from "./pages/Landing";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import OTPVerification from "./components/OTPPage";
-// import Home from "./pages/Home";
-// import Profile from "./components/ProfilePage/ProfilePage";
-import Profile2 from "./components/ProfilePage/ProfilePage2";
+import Profile from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
 import SideBar from "./components/SideBar/SideBar";
 
@@ -24,8 +22,7 @@ const App = () => {
             path="/otp-verification"
             element={<OTPVerification email="user@example.com" />}
           />
-          {/* <Route path="/profile" element={<Profile />} /> */}
-          <Route path="/profile2" element={<Profile2 />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/homepage" element={<HomePage />} />
           <Route path="/sidebar" element={<SideBar />} />
         </Routes>

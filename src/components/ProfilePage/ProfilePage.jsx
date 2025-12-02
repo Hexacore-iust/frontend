@@ -6,9 +6,9 @@ import CustomDatePicker from "../DatePicker/DatePicker";
 import axios from "axios";
 import { baseUrl } from "../../config";
 import ChangePassword from "../ChangePassword/ChangePassword";
-import "./ProfilePage2.scss";
+import "./ProfilePage.scss";
 
-const Profile2 = () => {
+const Profile = () => {
   const [date, setDate] = React.useState(dayjs(Date()));
   const [emailError, setEmailError] = useState("");
 
@@ -334,4 +334,4 @@ const Profile2 = () => {
   );
 };
 
-export default Profile2;
+export default Profile;
