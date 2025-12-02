@@ -43,7 +43,6 @@ const HomePage = () => {
             // marginRight: `${width}px`,
             width: "100%",
             height: "100vh",
-            backgroundColor: "blue",
           }}
         >
           content

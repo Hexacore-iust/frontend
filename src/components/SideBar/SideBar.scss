@@ -14,8 +14,8 @@ $font-color: #357a6e;
   color: $font-color;
   transition: width 0.3s ease;
   // overflow: hidden;
-  top: 0;
-  width: 80px;
+  // top: 0;
+  // width: 80px;
   height: 100%;
   &--open {
     width: 256px;
@@ -36,6 +36,8 @@ $font-color: #357a6e;
   justify-content: space-between;
   align-items: center;
   padding-right: 8px;
+  padding-top: 16px;
+  margin: 8px;
 }
 
 .sidebar__title {
@@ -43,7 +45,7 @@ $font-color: #357a6e;
   line-height: 1.75rem;
   font-weight: 700;
   margin-bottom: 16px;
-
+  margin: 8px;
   display: none;
 
   .sidebar--open & {
@@ -79,12 +81,16 @@ $font-color: #357a6e;
 
 .sidebar__item {
   display: flex;
-  height: 60px;
+  height: 64px;
   align-items: center;
-  margin: 0 0 16px 0;
-  padding-right: 8px;
+  padding-right: 16px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+
+  &--active {
+    background-color: $hover-color;
+    color: #fff;
+  }
 
   &:hover {
     background-color: $hover-color;

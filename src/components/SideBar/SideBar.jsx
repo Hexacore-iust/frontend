@@ -14,7 +14,7 @@ const SideBar = (props) => {
       icon: FaCog,
       path: "/assistant",
     },
-    { id: "apps", label: "برنامه ها", icon: FaSignOutAlt, path: "/apps" },
+    { id: "apps", label: "برنامه ها", icon: FaSignOutAlt, path: "/tasks" },
   ];
 
   const { sidebarRef } = props;
