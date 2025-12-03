@@ -22,7 +22,12 @@ export default function HomeHeader() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const navItems = ["ارتباط با ما", "اشتراک‌ها", "قوانین و مقررات", "درباره ما"];
+  const navItems = [
+    "ارتباط با ما",
+    "اشتراک‌ها",
+    "قوانین و مقررات",
+    "درباره ما",
+  ];
 
   const handleLogin = () => navigate("/login");
   const handleSignup = () => navigate("/signup");
@@ -172,7 +177,9 @@ export default function HomeHeader() {
           anchor="right"
           open={open}
           onClose={() => setOpen(false)}
-          PaperProps={{ sx: { fontFamily: "Vazirmatn, sans-serif", direction: "rtl" } }}
+          PaperProps={{
+            sx: { fontFamily: "Vazirmatn, sans-serif", direction: "rtl" },
+          }}
         >
           <Box sx={{ width: 260, p: 2 }}>
             <IconButton onClick={() => setOpen(false)} sx={{ mb: 1 }}>

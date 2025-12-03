@@ -261,6 +261,7 @@ const Profile = () => {
               dateValue={date}
               setDateValue={setDate}
               label={"تاریخ تولد"}
+              fullWidth={true}
             />
           </div>
           {/* File Upload Section */}

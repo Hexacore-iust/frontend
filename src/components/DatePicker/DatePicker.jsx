@@ -3,7 +3,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const CustomDatePicker = (props) => {
-  const { label, dateValue, setDateValue } = props;
+  const { label, dateValue, setDateValue, fullWidth } = props;
 
   return (
     <>
@@ -14,7 +14,7 @@ const CustomDatePicker = (props) => {
           onChange={(newValue) => setDateValue(newValue)}
           slotProps={{
             textField: {
-              fullWidth: true,
+              fullWidth: fullWidth,
               margin: "normal",
               size: "small",
               sx: {
