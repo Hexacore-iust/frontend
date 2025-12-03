@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import CustomAccordion from "../Accordion/CustomAccordion";
 import DatePicker from "../DatePicker/DatePicker";
 import Button from "@mui/material/Button";
-import { colors } from "@mui/material";
 
 const Dashboard = () => {
   const { schedule } = scheduleToday;
