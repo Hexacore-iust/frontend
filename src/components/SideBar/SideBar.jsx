@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
-import "./SideBar.scss";
+import "./SideBar.styles.scss";
 
 const SideBar = (props) => {
   const { sidebarRef, navItems, handleNavClick, contentType } = props;

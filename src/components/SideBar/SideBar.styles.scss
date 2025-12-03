@@ -16,10 +16,12 @@ $font-color: #357a6e;
   height: 99%;
   &--open {
     width: 256px;
+    background-color: $bg-color;
   }
 
   &--closed {
     width: 80px;
+    background-color: $bg-color;
   }
 
   @media (min-width: 768px) {
