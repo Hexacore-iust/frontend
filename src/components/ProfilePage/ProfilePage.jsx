@@ -6,7 +6,7 @@ import CustomDatePicker from "../DatePicker/DatePicker";
 import axios from "axios";
 import { baseUrl } from "../../config";
 import ChangePassword from "../ChangePassword/ChangePassword";
-import "./ProfilePage.scss";
+import "./ProfilePage.styles.scss";
 
 const Profile = () => {
   const [date, setDate] = React.useState(dayjs(Date()));
@@ -40,7 +40,9 @@ const Profile = () => {
 
   const [files, setFiles] = useState([]);
 
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2NTM3NDA3MCwiaWF0IjoxNzY0NzY5MjcwLCJqdGkiOiIyMmY1MjNhNTE3YmM0MDhhYjQ4OWY2YjY5YjMxODJhYiIsInVzZXJfaWQiOjF9.R8rZrXloNrP_LwN6cLkosEKSTI2B9ihIwrUCWm4J6Rw";
 
   const getProfile = () => {
     axios({

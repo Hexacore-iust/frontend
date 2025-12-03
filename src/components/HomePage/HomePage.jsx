@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FaHome, FaUserAlt, FaRobot, FaTasks } from "react-icons/fa";
-// import { GiArtificialIntelligence  } from "react-icons/gi";
-import "./HomePage.scss";
+import "./HomePage.styles.scss";
 import SideBar from "../SideBar/SideBar";
 import Profile from "../ProfilePage/ProfilePage";
 import Dashboard from "../Dashboard/Dashboard";
