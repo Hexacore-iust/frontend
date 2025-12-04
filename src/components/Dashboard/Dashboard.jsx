@@ -11,6 +11,7 @@ import DashboardFilterTasks from "./DashBoardFilter/DashboardFilterTasks";
 
 const Dashboard = () => {
   const { schedule } = scheduleToday;
+
   const [statistics, setStatistics] = useState({
     overdue_tasks: 0,
     upcoming_tasks: 0,
@@ -111,6 +112,7 @@ const Dashboard = () => {
           {schedule.map((item) => {
             return (
               <CustomAccordion
+                key={item.id}
                 summary={item.title}
                 detailsChildren={
                   <div

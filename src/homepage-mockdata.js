@@ -62,7 +62,7 @@ export const scheduleToday = {
     },
     {
       type: "task",
-      id: 1,
+      id: 2,
       title: "خواندن فصل ۱ کتاب",
       description: "از صفحه ۱۰ تا ۳۰",
       time: "2025-12-03T10:00:00Z",
@@ -74,7 +74,7 @@ export const scheduleToday = {
     },
     {
       type: "task",
-      id: 2,
+      id: 3,
       title: "انجام تمرین ریاضی",
       description: "تمرینات فصل ۲",
       time: "2025-12-03T14:00:00Z",

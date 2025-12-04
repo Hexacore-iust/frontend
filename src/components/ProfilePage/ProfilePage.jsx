@@ -9,7 +9,7 @@ import ChangePassword from "../ChangePassword/ChangePassword";
 import "./ProfilePage.styles.scss";
 
 const Profile = () => {
-  const [date, setDate] = React.useState();
+  const [date, setDate] = useState();
   const [emailError, setEmailError] = useState("");
 
   const [formData, setFormData] = useState({
@@ -44,6 +44,12 @@ const Profile = () => {
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2NTM3NDA3MCwiaWF0IjoxNzY0NzY5MjcwLCJqdGkiOiIyMmY1MjNhNTE3YmM0MDhhYjQ4OWY2YjY5YjMxODJhYiIsInVzZXJfaWQiOjF9.R8rZrXloNrP_LwN6cLkosEKSTI2B9ihIwrUCWm4J6Rw";
 
+  const handleChangeDate = (value) => {
+    setDate((prev) => ({
+      ...prev,
+      start: value,
+    }));
+  };
   const getProfile = () => {
     axios({
       method: "get",
@@ -259,7 +265,7 @@ const Profile = () => {
             />
             <CustomDatePicker
               dateValue={date}
-              handleChangeDate={setDate}
+              handleChangeDate={handleChangeDate}
               label={"تاریخ تولد"}
               fullWidth={true}
             />

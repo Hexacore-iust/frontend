@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-// import { baseUrl } from "../../config";
+import axios from "axios";
+import { baseUrl } from "../../../config";
 import DatePicker from "../../DatePicker/DatePicker";
 import Button from "@mui/material/Button";
 
 const DashboardFilterMeeting = (props) => {
   const { title, upcomingMeetings } = props;
+  const token = localStorage.getItem("token");
 
   const [date, setDate] = useState({
     start: new Date(),
     end: new Date(),
   });
+  console.log("start", date.start);
 
   const handleChangeStart = (value) => {
     setDate((prev) => ({
@@ -23,6 +26,45 @@ const DashboardFilterMeeting = (props) => {
       ...prev,
       end: value,
     }));
+  };
+
+  const toUtcMidnightISOString = (value) => {
+    if (!value) return null;
+
+    const d = value instanceof Date ? value : new Date(value);
+
+    // Use UTC year/month/day and set time to 00:00:00 UTC
+    return new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0)
+    ).toISOString();
+  };
+
+  const getUpcomingMeetings = (start, end) => {
+    return axios
+      .post(
+        `${baseUrl}/api/homepage/statistics/range/upcoming-meetings/`,
+        {
+          start,
+          end,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(token)}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        console.log("upcoming tasks in range:", res.data);
+        return res.data;
+      });
+  };
+
+  const handleSubmitDate = () => {
+    getUpcomingMeetings(
+      toUtcMidnightISOString(date.start),
+      toUtcMidnightISOString(date.end)
+    );
   };
 
   return (
@@ -47,7 +89,7 @@ const DashboardFilterMeeting = (props) => {
           />
         </div>
         <Button
-          type="submit"
+          onClick={handleSubmitDate}
           variant="contained"
           style={{
             backgroundColor: "#00c48c",
