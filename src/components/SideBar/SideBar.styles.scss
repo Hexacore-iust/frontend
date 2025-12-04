@@ -1,58 +1,57 @@
-$bg-color: #1dc9a0;
-$hover-color: #357a6e;
+$bg-color: #d1fadf;
+$hover-color: #1dc9a0;
 $border-color: #e0e0e0;
 $text-muted: #777;
+$font-color: #357a6e;
 
-.sidebar-layout {
-  display: flex;
-}
-
-/* fixed sidebar container */
 .sidebar {
-  position: fixed;
-  height: 100%;
+  // position: fixed;
+  // overflow: hidden;
+  // top: 0;
+  // width: 80px;
   background-color: $bg-color;
-  color: #ffffff;
+  color: $font-color;
   transition: width 0.3s ease;
-  overflow: hidden;
-
-  width: 5rem;
-
+  border-radius: 16px;
+  height: 99%;
   &--open {
-    width: 16rem;
+    width: 256px;
+    background-color: $bg-color;
   }
 
   &--closed {
-    width: 5rem;
+    width: 80px;
+    background-color: $bg-color;
   }
 
   @media (min-width: 768px) {
-    width: 16rem;
+    width: 256px;
+    transform: none;
   }
 }
 
-/* header with title and toggle button */
 .sidebar__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem; // p-4
+  padding-right: 8px;
+  padding-top: 16px;
+  margin: 8px;
 }
 
-/* text-xl font-bold + visibility behavior */
 .sidebar__title {
-  font-size: 1.25rem; // text-xl
+  font-size: 1.25rem;
   line-height: 1.75rem;
-  font-weight: 700;
 
-  // mobile: hidden when sidebar is closed
+  font-weight: 700;
+  margin-bottom: 16px;
+  margin: 8px;
   display: none;
 
   .sidebar--open & {
     display: block;
   }
 
-  // md and up: always visible
   @media (min-width: 768px) {
     display: block;
   }
@@ -62,7 +61,7 @@ $text-muted: #777;
   border: none;
   cursor: pointer;
   display: block;
-  color: #ffffff;
+  color: $font-color;
 
   @media (min-width: 768px) {
     display: none;
@@ -82,13 +81,20 @@ $text-muted: #777;
 
 .sidebar__item {
   display: flex;
+  height: 64px;
   align-items: center;
-  padding: 1rem; // p-4
+  padding-right: 16px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
+  &--active {
+    background-color: $hover-color;
+    color: #fff;
+  }
+
   &:hover {
     background-color: $hover-color;
+    color: #fff;
   }
 }
 

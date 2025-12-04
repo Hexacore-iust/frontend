@@ -7,7 +7,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import "./ChangePassword.scss";
+import "./ChangePassword.styles.scss";
 
 const ChangePassword = () => {
   const [passwordError, setPasswordError] = useState("");
