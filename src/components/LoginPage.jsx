@@ -53,7 +53,7 @@ const LoginPage = () => {
         }
       );
 
-      console.log("Response status:", response.status);
+      console.log("Response status:", response);
 
       const data = await response.json();
       console.log("Response ", data);
@@ -62,12 +62,12 @@ const LoginPage = () => {
         setSuccess("Login successful! Redirecting...");
 
         // Save user info to localStorage
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", JSON.stringify(data.tokens.access));
 
-        // Redirect after success
-        setTimeout(() => {
-          window.location.href = "/dashboard"; // Change to your desired redirect page
-        }, 1500);
+        // // Redirect after success
+        // setTimeout(() => {
+        window.location.href = "/homepage"; // Change to your desired redirect page
+        // }, 1500);
       } else {
         // Handle error response
         setError(data.message || "Login failed. Please try again.");

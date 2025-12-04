@@ -1,32 +1,63 @@
-import React from "react";
-// import { useEffect } from "react";
-// import { baseUrl } from "../../config";
-// import axios from "axios";
-import { statistics, scheduleToday } from "../../homepage-mockdata";
+import React, { useState } from "react";
+import { useEffect } from "react";
+import { baseUrl } from "../../config";
+import axios from "axios";
+import { scheduleToday } from "../../homepage-mockdata";
 import "./Dashboard.styles.scss";
-import dayjs from "dayjs";
 import CustomAccordion from "../Accordion/CustomAccordion";
-import DatePicker from "../DatePicker/DatePicker";
-import Button from "@mui/material/Button";
+import DashboardFilterMeeting from "./DashBoardFilter/DashboardFilterMeeting";
+import DashboardFilterTaskOverdue from "./DashBoardFilter/DashboardFilterTaskOverdue";
+import DashboardFilterTasks from "./DashBoardFilter/DashboardFilterTasks";
 
 const Dashboard = () => {
   const { schedule } = scheduleToday;
-  const [dateStart, setDateStart] = React.useState(dayjs(Date()));
-  const [dateEnd, setDateEnd] = React.useState(dayjs(Date()));
-  // const token = localStorage.getItem("token");
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2NTM3NTEzOSwiaWF0IjoxNzY0NzcwMzM5LCJqdGkiOiI5ODdjZTRlNGVjYWM0YjQ3ODY2OWI4MmVmYTE2NWQzNiIsInVzZXJfaWQiOjF9.82Prhk5Fr_Qzj6OyOxkSyh27YyAd3x_Zh4MudjQV7AU";
+  const [statistics, setStatistics] = useState({
+    overdue_tasks: 0,
+    upcoming_tasks: 0,
+    upcoming_meetings: 0,
+  });
+  const token = localStorage.getItem("token");
 
-  // const getDashboard = () => {
+  // const getStatistic = () => {
   //   axios({
   //     method: "get",
-  //     headers: { Authorization: `Bearer ${token}` },
-  //     url: `${baseUrl}/api/homepage/`,
+  //     headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+  //     url: `${baseUrl}/api/homepage/statistics`,
   //     responseType: "application/json",
   //   }).then(function (response) {
-  //     console.log("res", response);
+  //     console.log("response", response);
+  //     setStatistics(response);
   //   });
   // };
+  // const getTodaySchedule = () => {
+  //   axios({
+  //     method: "get",
+  //     headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+  //     url: `${baseUrl}/api/homepage/schedule/today`,
+  //     responseType: "application/json",
+  //   }).then(function (response) {
+  //     const schedule = JSON.parse(response.data);
+  //     console.log("tasks:", schedule.tasks);
+  //     console.log("meetings:", schedule.meetings);
+  //   });
+  // };
+
+  // Temp Fix
+  const getStatistic = () => {
+    axios({
+      method: "get",
+      headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+      url: `${baseUrl}/api/homepage/statistics`,
+      responseType: "application/json",
+    })
+      .then((response) => {
+        const stats = JSON.parse(response.data);
+        setStatistics(stats);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   const toHM = (value) => {
     if (!value) return "";
     if (typeof value === "string" && /^\d{2}:\d{2}$/.test(value)) return value;
@@ -40,9 +71,10 @@ const Dashboard = () => {
       hour12: false,
     }).format(d);
   };
-  // useEffect(() => {
-  //   getDashboard();
-  // }, []);
+  useEffect(() => {
+    getStatistic();
+    // getTodaySchedule();
+  }, []);
 
   return (
     <div className="content-wrapper">
@@ -51,95 +83,20 @@ const Dashboard = () => {
         <h3>برنامه ریزی کن</h3>
       </div>
       <div className="task-blocks">
-        <div className="task-blocks__statistic-box">
-          <div className="task-blocks__statistic-box__text">
-            <h3>قرار های پیش رو</h3>
-            <p style={{ color: "#FF8D28" }}>{statistics.upcoming_meetings}</p>
-          </div>
-          <div className="task-blocks__statistic-box__date">
-            <DatePicker
-              dateValue={dateStart}
-              setDateValue={setDateStart}
-              label={"از"}
-              fullWidth={false}
-            />
-            <DatePicker
-              dateValue={dateEnd}
-              setDateValue={setDateEnd}
-              label={"به"}
-              fullWidth={false}
-            />
-          </div>
-          <Button
-            type="submit"
-            variant="contained"
-            style={{
-              backgroundColor: "#00c48c",
-            }}
-          >
-            مشاهده بیشتر{" "}
-          </Button>
-        </div>
-        <div className="task-blocks__statistic-box">
-          <div className="task-blocks__statistic-box__text">
-            <h3>کار های پیش رو</h3>
-            <p style={{ color: "#6155F5" }}>{statistics.upcoming_tasks}</p>
-          </div>
-          <div className="task-blocks__statistic-box__date">
-            <DatePicker
-              dateValue={dateStart}
-              setDateValue={setDateStart}
-              label={"از"}
-              fullWidth={false}
-            />
-            <DatePicker
-              dateValue={dateEnd}
-              setDateValue={setDateEnd}
-              label={"به"}
-              fullWidth={false}
-            />
-          </div>
+        <DashboardFilterMeeting
+          title={"قرار های پیش رو"}
+          upcomingMeetings={statistics.upcoming_meetings}
+        />
 
-          <Button
-            type="submit"
-            variant="contained"
-            style={{
-              backgroundColor: "#00c48c",
-            }}
-          >
-            مشاهده بیشتر{" "}
-          </Button>
-        </div>
-        <div className="task-blocks__statistic-box">
-          <div className="task-blocks__statistic-box__text">
-            <h3>کار های باقی مانده</h3>
-            <p style={{ color: "#870305" }}>{statistics.overdue_tasks}</p>
-          </div>
-          <div className="task-blocks__statistic-box__date">
-            <DatePicker
-              dateValue={dateStart}
-              setDateValue={setDateStart}
-              label={"از"}
-              fullWidth={false}
-            />
-            <DatePicker
-              dateValue={dateEnd}
-              setDateValue={setDateEnd}
-              label={"به"}
-              fullWidth={false}
-            />
-          </div>
+        <DashboardFilterTasks
+          title={"کار های پیش رو"}
+          upcomingTasks={statistics.upcoming_tasks}
+        />
 
-          <Button
-            type="submit"
-            variant="contained"
-            style={{
-              backgroundColor: "#00c48c",
-            }}
-          >
-            مشاهده بیشتر{" "}
-          </Button>
-        </div>
+        <DashboardFilterTaskOverdue
+          title={"کار های باقی مانده"}
+          upcomingTasksOverdue={statistics.overdue_tasks}
+        />
       </div>
 
       <div className="today-plan">

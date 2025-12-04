@@ -9,7 +9,7 @@ import ChangePassword from "../ChangePassword/ChangePassword";
 import "./ProfilePage.styles.scss";
 
 const Profile = () => {
-  const [date, setDate] = React.useState(dayjs(Date()));
+  const [date, setDate] = React.useState();
   const [emailError, setEmailError] = useState("");
 
   const [formData, setFormData] = useState({
@@ -259,7 +259,7 @@ const Profile = () => {
             />
             <CustomDatePicker
               dateValue={date}
-              setDateValue={setDate}
+              handleChangeDate={setDate}
               label={"تاریخ تولد"}
               fullWidth={true}
             />
