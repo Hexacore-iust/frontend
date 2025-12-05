@@ -6,9 +6,6 @@ import SignupPage from "./components/SignupPage";
 import OTPVerification from "./components/OTPPage";
 import Task from "./pages/TaskManagement";
 import Chat from "./pages/Chat";
-// import Home from "./pages/Home";
-// import Profile from "./components/ProfilePage/ProfilePage";
-import Profile2 from "./components/ProfilePage/ProfilePage2";
 import HomePage from "./components/HomePage/HomePage";
 
 const App = () => {
@@ -25,7 +22,7 @@ const App = () => {
             element={<OTPVerification email="user@example.com" />}
           />
           {/* <Route path="/profile" element={<Profile />} /> */}
-          <Route path="/profile2" element={<Profile2 />} />
+          
           <Route path="/Task" element={<Task />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/homepage" element={<HomePage />} />
