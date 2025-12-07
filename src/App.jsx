@@ -4,10 +4,10 @@ import Landing from "./pages/Landing";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import OTPVerification from "./components/OTPPage";
-import Task from "./pages/TaskManagement";
 import Chat from "./pages/Chat";
 import HomePage from "./components/HomePage/HomePage";
 import Dashboard from "./components/Dashboard/Dashboard";
+import TaskManagementPage from "./components/TaskManagement/TaskManagement2";
 
 const App = () => {
   return (
@@ -23,11 +23,7 @@ const App = () => {
             element={<OTPVerification email="user@example.com" />}
           />
           {/* <Route path="/profile" element={<Profile />} /> */}
-          
-          <Route path="/Task" element={<Task />} />
-          <Route path="/chat" element={<Chat />} />
           <Route path="/homepage" element={<HomePage />} />
-          <Route path="/dash" element={<Dashboard />} />
         </Routes>
       </div>
     </Router>

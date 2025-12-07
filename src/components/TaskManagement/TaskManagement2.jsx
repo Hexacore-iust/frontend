@@ -1,5 +1,5 @@
 import React from 'react';
-import './TaskManagement.css';
+import './TaskManagement2.css';
 
 import { FaPlus, FaChevronLeft, FaChevronRight, FaChevronDown } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";

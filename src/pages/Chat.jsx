@@ -4,17 +4,16 @@ import Header from "../components/Header";
 import SideBar from "../components/SideBar/SideBar";
 import ChatPage from "../components/Chat/component1"; // صفحه چت
 import Footer from "../components/Footer";
+import Dashboard from "../components/Dashboard/Dashboard";
 
 // آیتم‌های منو سایدبار
 import { FaHome, FaUserAlt, FaRobot, FaTasks } from "react-icons/fa";
-import { MdChat } from "react-icons/md";
 
 const Chat = () => {
-  const [contentType, setContentType] = useState("chat"); // شروع با صفحه چت
+  const [contentType, setContentType] = useState("assistant"); // شروع با دستیار
   const [width, setWidth] = useState(0);
   const elementRef = useRef(null);
 
-  // آیتم‌های سایدبار (همه آیتم‌ها بدون حذف)
   const navItems = [
     {
       id: "dashboard",
@@ -30,11 +29,6 @@ const Chat = () => {
       id: "assistant",
       label: "دستیار هوشمند",
       icon: FaRobot,
-    },
-    {
-      id: "chat",
-      label: "چت",
-      icon: MdChat,
     },
     {
       id: "tasks",
@@ -59,23 +53,41 @@ const Chat = () => {
 
   let content;
   switch (contentType) {
-    case "chat":
-      content = <ChatPage />; // صفحه چت
-      break;
     case "dashboard":
-      content = <></>; // محتوای داشبورد
+      content = <Dashboard />; // فقط داشبورد
       break;
+
+    case "assistant":
+      // ✅ داشبورد و صفحه چت در یک خط کنار هم
+      content = (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "16px",
+            height: "100%",
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <Dashboard />
+          </div>
+          <div style={{ flex: 1 }}>
+            <ChatPage />
+          </div>
+        </div>
+      );
+      break;
+
     case "profile":
       content = <></>; // محتوای پروفایل
       break;
-    case "assistant":
-      content = <></>; // محتوای دستیار
-      break;
+
     case "tasks":
       content = <></>; // محتوای تسک‌ها
       break;
+
     default:
-      content = <></>;
+      content = <Dashboard />;
   }
 
   return (
@@ -104,9 +116,7 @@ const Chat = () => {
         </div>
 
         {/* محتوای اصلی */}
-        <div style={{ flexGrow: 1, height: "100vh" }}>
-          {content}
-        </div>
+        <div style={{ flexGrow: 1, height: "100vh" }}>{content}</div>
       </div>
 
       {/* فوتر ثابت */}

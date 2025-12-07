@@ -143,7 +143,7 @@ export default function HomeHeader() {
                 fontSize: "1.2rem",
               }}
             >
-              Hexacore
+              هوشیار
             </Typography>
 
             <Box
