@@ -47,14 +47,6 @@ $box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   box-shadow: $box-shadow;
 }
 
-.today-plan {
-  background-color: $background-color;
-  padding: $padding;
-  border-radius: $border-radius;
-  margin-bottom: 20px;
-  flex: 1;
-}
-
 @media screen and (max-width: 768px) {
   .task-blocks {
     flex-direction: column;

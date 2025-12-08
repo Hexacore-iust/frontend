@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import { TextField, MenuItem, Button } from "@mui/material";
 import CustomDatePicker from "../DatePicker/DatePicker";
 import axios from "axios";
 import { baseUrl } from "../../config";
-import ChangePassword from "../ChangePassword/ChangePassword";
+import ChangePassword from "./ChangePassword/ChangePassword";
+import FileUpload from "./FileUpload..jsx";
 import "./ProfilePage.styles.scss";
 
 const Profile = () => {
   const [date, setDate] = useState();
-  const [image, setImage] = useState(null);
   const [emailError, setEmailError] = useState("");
+  const [image, setImage] = useState(null);
+  const genderOptions = [
+    { value: "F", label: "زن" },
+    { value: "M", label: "مرد" },
+    { value: "O", label: "دیگر" },
+  ];
 
   const [formData, setFormData] = useState({
     profilePicture: "",
@@ -25,14 +30,16 @@ const Profile = () => {
     job: "",
   });
 
-  const [files, setFiles] = useState([]);
-
   const token = JSON.parse(localStorage.getItem("token"));
 
   const handleChangeDate = (value) => {
     setDate((prev) => ({
       ...prev,
       start: value,
+    }));
+    setFormData((prev) => ({
+      ...prev,
+      birthDate: value,
     }));
   };
 
@@ -50,49 +57,77 @@ const Profile = () => {
         last_name,
         phone_number,
         avatar,
-        age,
+        date_of_birth,
         gender,
         job_title,
         city_of_residence,
       } = response.data;
+
+      const fullAvatarUrl = avatar ? `${baseUrl}${avatar}` : null;
+      const formattedDate = date_of_birth ? new Date(date_of_birth) : null;
+
       setFormData({
         email: email,
         username: username,
         firstName: first_name,
         lastName: last_name,
         phoneNumber: phone_number,
-        profilePicture: avatar,
-        age: age,
+        profilePicture: fullAvatarUrl,
+        birthDate: formattedDate,
         gender: gender,
         job: job_title,
         city: city_of_residence,
       });
+      setDate(date_of_birth);
     });
   };
 
-  console.log(formData);
+  const toUtcMidnightISOString = (value) => {
+    if (!value) return null;
 
+    const d = value instanceof Date ? value : new Date(value);
+    const utcDate = new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+    );
+    const year = utcDate.getUTCFullYear();
+    const month = (utcDate.getUTCMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+    const day = utcDate.getUTCDate().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
   const handleFormUpdate = async () => {
     const formDataToSend = new FormData();
+
+    const appendIfNotEmpty = (key, value) => {
+      if (value != null && value !== "") {
+        formDataToSend.append(key, value);
+      }
+    };
+
     if (image) {
-      formDataToSend.append("profilePicture", image);
+      formDataToSend.append("avatar", image);
     }
-    formDataToSend.append("first_name", formData.firstName);
-    formDataToSend.append("last_name", formData.lastName);
-    formDataToSend.append("email", formData.email);
-    formDataToSend.append("phone_number", formData.phoneNumber);
-    formDataToSend.append("gender", formData.gender);
-    formDataToSend.append("city_of_residence", formData.city);
-    formDataToSend.append("job_title", formData.job);
+    appendIfNotEmpty("first_name", formData.firstName);
+
+    appendIfNotEmpty("last_name", formData.lastName);
+    appendIfNotEmpty("email", formData.email);
+    appendIfNotEmpty("phone_number", formData.phoneNumber);
+    appendIfNotEmpty("gender", formData.gender);
+    appendIfNotEmpty("city_of_residence", formData.city);
+    appendIfNotEmpty("job_title", formData.job);
+    appendIfNotEmpty(
+      "date_of_birth",
+      toUtcMidnightISOString(formData.birthDate)
+    );
 
     try {
       const response = await axios.patch(
-        `${baseUrl}/api/profile/`,
+        `${baseUrl}/api/auth/profile/update/`,
         formDataToSend,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -101,6 +136,7 @@ const Profile = () => {
       console.error("Error updating profile", error);
     }
   };
+
   useEffect(() => {
     getProfile();
   }, []);
@@ -130,10 +166,6 @@ const Profile = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    setFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files)]);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     handleFormUpdate();
@@ -143,8 +175,8 @@ const Profile = () => {
   const handleCancel = () => {
     console.log("cancel");
     setFormData({
-      email: email,
-      username: username,
+      email: formData.email,
+      username: formData.username,
       firstName: "",
       lastName: "",
       phoneNumber: "",
@@ -190,8 +222,6 @@ const Profile = () => {
           <div className="profile-card__container">
             <TextField
               required
-              // disabled
-              // id="email"
               name="email"
               label="ایمیل"
               value={formData.email}
@@ -248,6 +278,7 @@ const Profile = () => {
               sx={{ input: { color: "#777" } }}
             />
             <TextField
+              select
               name="gender"
               label="جنسیت"
               value={formData.gender}
@@ -256,8 +287,13 @@ const Profile = () => {
               margin="normal"
               size="small"
               sx={{ input: { color: "#777" } }}
-            />
-
+            >
+              {genderOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               name="city"
               label="شهر محل زندگی"
@@ -279,48 +315,11 @@ const Profile = () => {
               sx={{ input: { color: "#777" } }}
             />
             <CustomDatePicker
-              dateValue={date}
+              dateValue={formData.birthDate}
               handleChangeDate={handleChangeDate}
               label={"تاریخ تولد"}
               fullWidth={true}
             />
-          </div>
-          {/* File Upload Section */}
-          <div className="file-upload">
-            <h5 className="profile-card__header"> به دستیار هوشمند کمک کن!</h5>
-            <p>
-              با بارگذاری و تکمیل اطلاعات شخصی خود، به مدل هوش مصنوعی ما کمک
-              می‌کنید تا تحلیل‌ها و پیشنهادهای ارائه‌شده را بر اساس ویژگی‌ها،
-              نیازها و اهداف فردی شما به‌صورت دقیق‌تر و شخصی‌سازی‌شده تنظیم کند.
-              تمامی داده‌های واردشده صرفاً برای بهبود کیفیت تجربه کاربری استفاده
-              می‌شوند و مطابق با اصول محرمانگی و حریم خصوصی نگهداری خواهند شد.
-            </p>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              id="file-upload-input"
-            />
-            {/* Display selected file names */}
-            <div>
-              {files.length > 0 && (
-                <ul>
-                  {Array.from(files).map((file, index) => (
-                    <li key={index}>{file.name}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <label htmlFor="file-upload-input">
-              <Button
-                variant="contained"
-                component="span"
-                style={{ backgroundColor: "#00c48c" }}
-              >
-                اپلود فایل
-              </Button>
-            </label>
           </div>
 
           {/* Submit Button */}
@@ -345,6 +344,10 @@ const Profile = () => {
             </Button>
           </div>
         </form>
+
+        {/* File Upload Section */}
+        <FileUpload />
+
         {/* Password Fields */}
         <ChangePassword />
       </div>

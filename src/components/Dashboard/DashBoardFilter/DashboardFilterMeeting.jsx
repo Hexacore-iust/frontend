@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 
 const DashboardFilterMeeting = (props) => {
   const { title, upcomingMeetings } = props;
-  const token = localStorage.getItem("token");
+  const token = JSON.parse(localStorage.getItem("token"));
 
   const [date, setDate] = useState({
     start: new Date(),
@@ -49,7 +49,7 @@ const DashboardFilterMeeting = (props) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${JSON.parse(token)}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
