@@ -7,6 +7,7 @@ import Dashboard from "../Dashboard/Dashboard";
 import HomeHeader from "../Header";
 import Footer from "../Footer";
 import TasksPage from "../TasksPage/TasksPage";
+import ChatPage from "../Chat/component1";
 
 const HomePage = () => {
   const [contentType, setContentType] = useState();
@@ -54,7 +55,7 @@ const HomePage = () => {
       break;
     case "assistant":
       // content = <AssistantPage />;
-      content = <></>;
+      content = <ChatPage/>;
       break;
     case "tasks":
       content = <TasksPage />;

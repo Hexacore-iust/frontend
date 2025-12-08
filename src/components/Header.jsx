@@ -85,7 +85,7 @@ export default function Header() {
                 whiteSpace: "nowrap",
               }}
             >
-              Hexacore
+              هوشیار
             </Typography>
 
             <Box
