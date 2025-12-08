@@ -6,6 +6,7 @@ import Profile from "../ProfilePage/ProfilePage";
 import Dashboard from "../Dashboard/Dashboard";
 import HomeHeader from "../Header";
 import Footer from "../Footer";
+import TasksPage from "../TasksPage/TasksPage";
 
 const HomePage = () => {
   const [contentType, setContentType] = useState();
@@ -56,8 +57,7 @@ const HomePage = () => {
       content = <></>;
       break;
     case "tasks":
-      // content = <TasksPage />;
-      content = <></>;
+      content = <TasksPage />;
       break;
     default:
       content = <Dashboard />;
