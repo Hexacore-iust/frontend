@@ -6,6 +6,7 @@ import Profile from "../ProfilePage/ProfilePage";
 import Dashboard from "../Dashboard/Dashboard";
 import HomeHeader from "../Header";
 import Footer from "../Footer";
+import TasksPage from "../TasksPage/TasksPage";
 import ChatPage from "../Chat/component1";
 
 const HomePage = () => {
@@ -57,8 +58,7 @@ const HomePage = () => {
       content = <ChatPage/>;
       break;
     case "tasks":
-      // content = <TasksPage />;
-      content = <></>;
+      content = <TasksPage />;
       break;
     default:
       content = <Dashboard />;
