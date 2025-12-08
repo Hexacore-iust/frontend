@@ -19,46 +19,38 @@ const Dashboard = () => {
   });
   const token = localStorage.getItem("token");
 
-  // const getStatistic = () => {
-  //   axios({
-  //     method: "get",
-  //     headers: { Authorization: `Bearer ${JSON.parse(token)}` },
-  //     url: `${baseUrl}/api/homepage/statistics`,
-  //     responseType: "application/json",
-  //   }).then(function (response) {
-  //     console.log("response", response);
-  //     setStatistics(response);
-  //   });
-  // };
-  // const getTodaySchedule = () => {
-  //   axios({
-  //     method: "get",
-  //     headers: { Authorization: `Bearer ${JSON.parse(token)}` },
-  //     url: `${baseUrl}/api/homepage/schedule/today`,
-  //     responseType: "application/json",
-  //   }).then(function (response) {
-  //     const schedule = JSON.parse(response.data);
-  //     console.log("tasks:", schedule.tasks);
-  //     console.log("meetings:", schedule.meetings);
-  //   });
-  // };
-
-  // Temp Fix
   const getStatistic = () => {
     axios({
       method: "get",
       headers: { Authorization: `Bearer ${JSON.parse(token)}` },
       url: `${baseUrl}/api/homepage/statistics`,
-      responseType: "application/json",
     })
       .then((response) => {
-        const stats = JSON.parse(response.data);
-        setStatistics(stats);
+        setStatistics({
+          overdue_tasks: response.data.overdue_tasks,
+          upcoming_tasks: response.data.upcoming_tasks,
+          upcoming_meetings: response.data.upcoming_meetings,
+        });
       })
       .catch((err) => {
         console.error(err);
       });
   };
+
+  const getTodaySchedule = () => {
+    axios({
+      method: "get",
+      headers: { Authorization: `Bearer ${JSON.parse(token)}` },
+      url: `${baseUrl}/api/homepage/schedule/today`,
+    })
+      .then((response) => {
+        console.log("res", response);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   const toHM = (value) => {
     if (!value) return "";
     if (typeof value === "string" && /^\d{2}:\d{2}$/.test(value)) return value;
@@ -74,7 +66,7 @@ const Dashboard = () => {
   };
   useEffect(() => {
     getStatistic();
-    // getTodaySchedule();
+    getTodaySchedule();
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { FaHome, FaUserAlt, FaRobot, FaTasks } from "react-icons/fa";
 import "./HomePage.styles.scss";
 import SideBar from "../SideBar/SideBar";
@@ -38,12 +38,12 @@ const HomePage = () => {
   };
 
   const elementRef = useRef(null);
-  const [width, setWidth] = useState(0);
-  const updateWidth = () => {
-    if (elementRef.current) {
-      setWidth(elementRef.current?.clientWidth);
-    }
-  };
+  // const [width, setWidth] = useState(0);
+  // const updateWidth = () => {
+  //   if (elementRef.current) {
+  //     setWidth(elementRef.current?.clientWidth);
+  //   }
+  // };
   let content;
   switch (contentType) {
     case "dashboard":
@@ -54,7 +54,7 @@ const HomePage = () => {
       break;
     case "assistant":
       // content = <AssistantPage />;
-      content = <ChatPage/>;
+      content = <ChatPage />;
       break;
     case "tasks":
       // content = <TasksPage />;
@@ -64,11 +64,11 @@ const HomePage = () => {
       content = <Dashboard />;
   }
 
-  useEffect(() => {
-    updateWidth();
-  }, []);
-  console.log("width", width);
-  console.log("elementRef", elementRef.current?.clientWidth);
+  // useEffect(() => {
+  //   updateWidth();
+  // }, []);
+  // console.log("width", width);
+  // console.log("elementRef", elementRef.current?.clientWidth);
   return (
     <div style={{ position: "relative" }}>
       <div

@@ -9,6 +9,7 @@ import "./ProfilePage.styles.scss";
 
 const Profile = () => {
   const [date, setDate] = useState();
+  const [image, setImage] = useState(null);
   const [emailError, setEmailError] = useState("");
 
   const [formData, setFormData] = useState({
@@ -24,24 +25,9 @@ const Profile = () => {
     job: "",
   });
 
-  const {
-    profilePicture,
-    username,
-    email,
-    phoneNumber,
-    gender,
-    firstName,
-    lastName,
-    birthDate,
-    city,
-    job,
-  } = formData;
-
   const [files, setFiles] = useState([]);
 
-  // const token = localStorage.getItem("token");
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2NTM3NDA3MCwiaWF0IjoxNzY0NzY5MjcwLCJqdGkiOiIyMmY1MjNhNTE3YmM0MDhhYjQ4OWY2YjY5YjMxODJhYiIsInVzZXJfaWQiOjF9.R8rZrXloNrP_LwN6cLkosEKSTI2B9ihIwrUCWm4J6Rw";
+  const token = JSON.parse(localStorage.getItem("token"));
 
   const handleChangeDate = (value) => {
     setDate((prev) => ({
@@ -49,13 +35,14 @@ const Profile = () => {
       start: value,
     }));
   };
+
   const getProfile = () => {
     axios({
       method: "get",
       headers: { Authorization: `Bearer ${token}` },
       url: `${baseUrl}/api/auth/profile/`,
-      responseType: "application/json",
     }).then(function (response) {
+      console.log("res", response);
       const {
         email,
         username,
@@ -65,6 +52,8 @@ const Profile = () => {
         avatar,
         age,
         gender,
+        job_title,
+        city_of_residence,
       } = response.data;
       setFormData({
         email: email,
@@ -75,28 +64,45 @@ const Profile = () => {
         profilePicture: avatar,
         age: age,
         gender: gender,
+        job: job_title,
+        city: city_of_residence,
       });
     });
   };
 
-  const setProfile = () => {
-    const bodyResponse = {
-      first_name: firstName,
-      last_name: lastName,
-      age: +age,
-      gender: gender,
-      phone_number: phoneNumber,
-    };
-    axios.patch(`${baseUrl}/api/auth/profile/update/`, bodyResponse, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  };
+  console.log(formData);
 
+  const handleFormUpdate = async () => {
+    const formDataToSend = new FormData();
+    if (image) {
+      formDataToSend.append("profilePicture", image);
+    }
+    formDataToSend.append("first_name", formData.firstName);
+    formDataToSend.append("last_name", formData.lastName);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("phone_number", formData.phoneNumber);
+    formDataToSend.append("gender", formData.gender);
+    formDataToSend.append("city_of_residence", formData.city);
+    formDataToSend.append("job_title", formData.job);
+
+    try {
+      const response = await axios.patch(
+        `${baseUrl}/api/profile/`,
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Profile updated successfully", response.data);
+    } catch (error) {
+      console.error("Error updating profile", error);
+    }
+  };
   useEffect(() => {
-    //getProfile();
+    getProfile();
   }, []);
 
   const handleEmailValidation = (email) => {
@@ -105,7 +111,6 @@ const Profile = () => {
       setEmailError("ایمیل باید به فرمت user@example.com باشد!");
       return false;
     }
-    setPasswordError("");
     return true;
   };
 
@@ -117,19 +122,21 @@ const Profile = () => {
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setFormData({ ...formData, profilePicture: URL.createObjectURL(file) });
+    }
+  };
 
   const handleFileChange = (e) => {
     setFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files)]);
   };
 
-  const handleSubmitPassword = (e) => {
-    e.preventDefault();
-    setProfile();
-    console.log("Password submitted", formData);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    handleFormUpdate();
     console.log("Form submitted", formData);
   };
 
@@ -157,13 +164,22 @@ const Profile = () => {
         <div className="profile-card__avatar-section">
           <div className="profile-card__avatar-circle">
             {formData.profilePicture && (
-              <img src={formData.profilePicture} alt="profile" />
+              <img
+                src={formData.profilePicture || "../../assets/pics/profile.jpg"}
+                alt="profile"
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             )}
-            <div className="profile-card__avatar-btn">
-              <span className="change-button">
-                <input className="profile-card__file-input" type="file" />+
-              </span>
-            </div>
+          </div>
+          <div className="profile-card__avatar-btn">
+            <span className="change-button">
+              <input
+                className="profile-card__file-input"
+                type="file"
+                onChange={handleProfilePictureChange}
+              />
+              +
+            </span>
           </div>
         </div>
 
@@ -178,7 +194,7 @@ const Profile = () => {
               // id="email"
               name="email"
               label="ایمیل"
-              value={email}
+              value={formData.email}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -189,7 +205,7 @@ const Profile = () => {
               required
               name="username"
               label="نام کاربری"
-              value={username}
+              value={formData.username}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -199,7 +215,7 @@ const Profile = () => {
             <TextField
               name="phoneNumber"
               label="تلفن همراه"
-              value={phoneNumber}
+              value={formData.phoneNumber}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -214,7 +230,7 @@ const Profile = () => {
             <TextField
               name="firstName"
               label="نام"
-              value={firstName}
+              value={formData.firstName}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -224,7 +240,7 @@ const Profile = () => {
             <TextField
               name="lastName"
               label="نام خانوادگی"
-              value={lastName}
+              value={formData.lastName}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -234,7 +250,7 @@ const Profile = () => {
             <TextField
               name="gender"
               label="جنسیت"
-              value={gender}
+              value={formData.gender}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -245,7 +261,7 @@ const Profile = () => {
             <TextField
               name="city"
               label="شهر محل زندگی"
-              value={city}
+              value={formData.city}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
@@ -255,7 +271,7 @@ const Profile = () => {
             <TextField
               name="job"
               label="شغل"
-              value={job}
+              value={formData.job}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
