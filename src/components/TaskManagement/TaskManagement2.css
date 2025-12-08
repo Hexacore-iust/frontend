@@ -1,158 +1,151 @@
 .container {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
-    margin: 0 auto;
-    overflow: hidden;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 .main-content {
-    display: flex;
-    padding: 20px;
-    gap: 20px;
-}
-
-.sidebar {
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  padding: 20px;
+  gap: 20px;
 }
 
 .add-button {
-    background-color: white;
-    border: 2px solid #ffa500;
-    color: #ffa500;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background-color: white;
+  border: 2px solid #ffa500;
+  color: #ffa500;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .add-button:hover {
-    background-color: #fff8e6;
+  background-color: #fff8e6;
 }
 
 .calendar-section {
-    background-color: #fafafa;
-    border-radius: 12px;
-    padding: 15px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 15px;
 }
 
 .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .calendar-title {
-    font-size: x-large;
-    font-weight: 500;
-    color: #333;
+  font-size: x-large;
+  font-weight: 500;
+  color: #333;
 }
 
 .calendar-nav {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .calendar-nav-btn {
-    background: none;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
+  background: none;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }
 
 .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    direction: ltr;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  direction: ltr;
 }
 
 .calendar-day {
-    height: 25px;
-    width: 60%;
-    padding-inline: 0px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
+  height: 25px;
+  width: 60%;
+  padding-inline: 0px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
 .calendar-day-selected {
-    background-color: #00bfa5;
-    color: #333;;
-    border-color: #00bfa5;
+  background-color: #00bfa5;
+  color: #333;
+  border-color: #00bfa5;
 }
 
 .filters-section {
-    background-color: #fafafa;
-    border-radius: 12px;
-    padding: 15px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  padding: 15px;
 }
 
 .filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
 .filter-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
 }
 
 .icon {
-    width: 16px;
-    height: 16px;
-    color: #555;
-    fill: #555;
+  width: 16px;
+  height: 16px;
+  color: #555;
+  fill: #555;
 }
 
 .filter-options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .filter-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .checkbox {
-    width: 16px;
-    height: 16px;
-    border: 1px solid #f59d04;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #f59d04;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filter-label {
-    font-size: 13px;
-    color: #555;
+  font-size: 13px;
+  color: #555;
 }

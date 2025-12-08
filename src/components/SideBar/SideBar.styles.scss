@@ -24,7 +24,7 @@ $font-color: #357a6e;
     background-color: $bg-color;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     width: 256px;
     transform: none;
   }
@@ -52,7 +52,7 @@ $font-color: #357a6e;
     display: block;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     display: block;
   }
 }
@@ -63,7 +63,7 @@ $font-color: #357a6e;
   display: block;
   color: $font-color;
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     display: none;
   }
 }
@@ -106,7 +106,7 @@ $font-color: #357a6e;
     display: block;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     display: block;
   }
 }
@@ -118,7 +118,7 @@ $font-color: #357a6e;
   min-height: 100vh;
   flex: 1;
 
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     margin-left: 16rem;
   }
 }
