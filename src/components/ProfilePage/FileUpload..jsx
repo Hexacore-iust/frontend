@@ -12,17 +12,17 @@ const FileUpload = () => {
 
   useEffect(() => {
     fetchUploadedFiles(token);
-  }, [token]);
+  }, []);
 
   const fetchUploadedFiles = async (token) => {
     try {
       const response = await axios.get(`${baseUrl}/api/auth/files/`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
         },
       });
-      setFiles(response.data || []); // Update the state with the file data received
+      setFiles(response.data.files || []);
     } catch (error) {
       console.error("Error fetching files:", error);
     }
@@ -30,7 +30,14 @@ const FileUpload = () => {
 
   const handleFileChange = (e) => {
     const selectedFiles = e.target.files;
-    setFiles((prevFiles) => [...prevFiles, ...Array.from(selectedFiles)]);
+    setFiles((prevFiles) => [
+      ...prevFiles,
+      ...Array.from(selectedFiles).map((file) => ({
+        file: URL.createObjectURL(file),
+        original_name: file.name,
+        fileData: file,
+      })),
+    ]);
   };
 
   const handleFileDelete = async (fileId) => {
@@ -49,7 +56,7 @@ const FileUpload = () => {
   const uploadFiles = async (files, token) => {
     const formData = new FormData();
     files.forEach((file) => {
-      formData.append("files", file);
+      formData.append("files", file.fileData);
     });
 
     try {
@@ -96,8 +103,12 @@ const FileUpload = () => {
     }
 
     try {
+      // Upload the new files
       const uploaded = await uploadFiles(files, token);
-      setFiles(uploaded.files || []);
+
+      const allFiles = [...uploaded.files, ...files];
+
+      setFiles(allFiles);
     } catch (error) {
       console.error("Error uploading files:", error);
     }
@@ -154,7 +165,6 @@ const FileUpload = () => {
                       )}
                       {file.original_name}
 
-                      {/* Delete button */}
                       <Button
                         onClick={() => handleFileDelete(file.id)}
                         style={{ marginLeft: "10px" }}
