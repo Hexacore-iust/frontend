@@ -4,7 +4,7 @@
   background-position: center;
   min-height: 100vh;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   padding: 16px;

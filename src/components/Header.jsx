@@ -1,4 +1,5 @@
 import React from "react";
+import logo from "../assets/Logo.png";
 import {
   AppBar,
   Toolbar,
@@ -7,7 +8,7 @@ import {
   Box,
 } from "@mui/material";
 
-export default function HomeHeader() {
+export default function Header() {
   const navItems = ["ارتباط با ما", "اشتراک‌ها", "قوانین و مقررات", "درباره ما"];
 
   return (
@@ -27,6 +28,7 @@ export default function HomeHeader() {
           mt: 2,
           px: 2,
           fontFamily: "Vazirmatn, sans-serif",
+          direction: "rtl",
         }}
       >
         <Toolbar
@@ -83,12 +85,12 @@ export default function HomeHeader() {
                 whiteSpace: "nowrap",
               }}
             >
-              Hexacore
+              هوشیار
             </Typography>
 
             <Box
               component="img"
-              src="/logo.png"
+              src={logo}
               alt="Logo"
               sx={{
                 width: { xs: 40, md: 55 },
