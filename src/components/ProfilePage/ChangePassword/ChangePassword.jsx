@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { apiInstance } from "../../../api/axios";
 import { IconButton, InputAdornment, TextField, Button } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { baseUrl } from "../../../config";
 import "./ChangePassword.styles.scss";
 
 const ChangePassword = () => {
-  const token = JSON.parse(localStorage.getItem("token"));
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState({
     currentPassword: "",
@@ -47,32 +45,18 @@ const ChangePassword = () => {
   };
   console.log("p", passwordError);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (newPassword !== repeatedPassword) {
       setPasswordError("Passwords do not match");
       return;
     }
 
-    try {
-      const response = await axios.patch(
-        `${baseUrl}/api/auth/profile/update/`,
-        {
-          current_password: currentPassword,
-          new_password: newPassword,
-          confirm_new_password: repeatedPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      alert(response.data.message);
-    } catch (error) {
-      console.error("Error changing password:", error);
-      setPasswordError(error.response?.data?.current_password || "Error");
-    }
+    apiInstance.patch("/api/auth/profile/update/", {
+      current_password: currentPassword,
+      new_password: newPassword,
+      confirm_new_password: repeatedPassword,
+    });
   };
 
   return (

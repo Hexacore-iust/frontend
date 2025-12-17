@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { baseUrl } from "../../config";
-import axios from "axios";
+import { apiInstance } from "../../api/axios";
 import { scheduleToday } from "../../homepage-mockdata";
 import "./Dashboard.styles.scss";
 import CustomAccordion from "../Accordion/CustomAccordion";
@@ -17,20 +16,18 @@ const Dashboard = () => {
     upcoming_tasks: 0,
     upcoming_meetings: 0,
   });
-  const token = localStorage.getItem("token");
 
   const getStatistic = () => {
-    axios({
-      method: "get",
-      headers: { Authorization: `Bearer ${JSON.parse(token)}` },
-      url: `${baseUrl}/api/homepage/statistics`,
-    })
+    apiInstance
+      .get("/api/homepage/statistics")
       .then((response) => {
-        setStatistics({
-          overdue_tasks: response.data.overdue_tasks,
-          upcoming_tasks: response.data.upcoming_tasks,
-          upcoming_meetings: response.data.upcoming_meetings,
-        });
+        if (response) {
+          setStatistics({
+            overdue_tasks: response.data.overdue_tasks,
+            upcoming_tasks: response.data.upcoming_tasks,
+            upcoming_meetings: response.data.upcoming_meetings,
+          });
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -38,11 +35,8 @@ const Dashboard = () => {
   };
 
   const getTodaySchedule = () => {
-    axios({
-      method: "get",
-      headers: { Authorization: `Bearer ${JSON.parse(token)}` },
-      url: `${baseUrl}/api/homepage/schedule/today`,
-    })
+    apiInstance
+      .get("/api/homepage/schedule/today")
       .then((response) => {
         console.log("res", response);
       })

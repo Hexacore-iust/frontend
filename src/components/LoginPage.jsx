@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { tokenStorage } from "../api/axios";
 import "../assets/styles/LoginForm.css";
 
 const LoginPage = () => {
@@ -62,7 +63,8 @@ const LoginPage = () => {
         setSuccess("Login successful! Redirecting...");
 
         // Save user info to localStorage
-        localStorage.setItem("token", JSON.stringify(data.tokens.access));
+        tokenStorage.set(JSON.stringify(data.tokens.access));
+        // localStorage.setItem("token", JSON.stringify(data.tokens.access));
 
         // // Redirect after success
         // setTimeout(() => {

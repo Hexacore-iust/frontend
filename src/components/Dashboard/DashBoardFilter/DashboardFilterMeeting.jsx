@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { baseUrl } from "../../../config";
 import DatePicker from "../../DatePicker/DatePicker";
 import Button from "@mui/material/Button";
+import { apiInstance } from "../../../api/axios";
 
 const DashboardFilterMeeting = (props) => {
   const { title, upcomingMeetings } = props;
-  const token = JSON.parse(localStorage.getItem("token"));
 
   const [date, setDate] = useState({
     start: new Date(),
@@ -40,20 +38,11 @@ const DashboardFilterMeeting = (props) => {
   };
 
   const getUpcomingMeetings = (start, end) => {
-    return axios
-      .post(
-        `${baseUrl}/api/homepage/statistics/range/upcoming-meetings/`,
-        {
-          start,
-          end,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    apiInstance
+      .post("/api/homepage/statistics/range/upcoming-meetings/", {
+        start,
+        end,
+      })
       .then((res) => {
         console.log("upcoming tasks in range:", res.data);
         return res.data;
