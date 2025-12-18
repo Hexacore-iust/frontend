@@ -8,7 +8,18 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import "./ChangePassword.styles.scss";
 
 const ChangePassword = () => {
-  const [passwordError, setPasswordError] = useState("");
+  const [errorMessage, setErrorMessage] = useState({
+    currentPass: "",
+    newPass: "",
+    repeatedPass: "",
+  });
+  const [error, setError] = useState({
+    currentPassError: false,
+    newPassError: false,
+    repeatedPassError: false,
+  });
+
+  console.log(errorMessage);
   const [password, setPassword] = useState({
     currentPassword: "",
     newPassword: "",
@@ -25,38 +36,54 @@ const ChangePassword = () => {
     setShowPasswordBox((showPasswordBox) => !showPasswordBox);
   };
 
-  const handlePasswordValidation = (password) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      console.log(":(");
-      setPasswordError(
-        "پسورد باید حداقل هشت رقم و شامل حروف بزرگ و اعداد باشد"
-      );
-      return false;
-    }
-    setPasswordError("");
-    return true;
-  };
-
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPassword((prev) => ({ ...prev, [name]: value }));
-    handlePasswordValidation(value);
   };
-  console.log("p", passwordError);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (newPassword !== repeatedPassword) {
-      setPasswordError("Passwords do not match");
-      return;
-    }
 
-    apiInstance.patch("/api/auth/profile/update/", {
-      current_password: currentPassword,
-      new_password: newPassword,
-      confirm_new_password: repeatedPassword,
-    });
+    apiInstance
+      .patch("/api/auth/profile/update/", {
+        current_password: currentPassword,
+        new_password: newPassword,
+        confirm_new_password: repeatedPassword,
+      })
+      .catch((err) => {
+        if (err.response.status === 400) {
+          if (err.response.data.current_password) {
+            setError((prev) => ({
+              ...prev,
+              currentPassError: true,
+            }));
+            setErrorMessage((prev) => ({
+              ...prev,
+              currentPass: err.response.data.current_password[0],
+            }));
+          }
+          if (err.response.data.new_password) {
+            setError((prev) => ({
+              ...prev,
+              newPassError: true,
+            }));
+            setErrorMessage((prev) => ({
+              ...prev,
+              newPass: err.response.data.new_password[0],
+            }));
+          }
+          if (err.response.data.confirm_new_password) {
+            setError((prev) => ({
+              ...prev,
+              repeatedPassError: true,
+            }));
+            setErrorMessage((prev) => ({
+              ...prev,
+              repeatedPass: err.response.data.confirm_new_password[0],
+            }));
+          }
+        }
+      });
   };
 
   return (
@@ -73,6 +100,8 @@ const ChangePassword = () => {
         <form onSubmit={handleSubmit}>
           <div className="profile-card__container-password">
             <TextField
+              error={error.currentPassError}
+              helperText={errorMessage.currentPass}
               name="currentPassword"
               label="رمز عبور"
               type={showPassword ? "text" : "password"}
@@ -101,6 +130,8 @@ const ChangePassword = () => {
               }}
             />
             <TextField
+              error={error.newPassError}
+              helperText={errorMessage.newPass}
               name="newPassword"
               label="رمزعبور جدید"
               type={showPassword ? "text" : "password"}
@@ -129,6 +160,8 @@ const ChangePassword = () => {
               }}
             />
             <TextField
+              error={error.repeatedPassError}
+              helperText={errorMessage.repeatedPass}
               name="repeatedPassword"
               label="تکرار رمزعبور"
               type={showPassword ? "text" : "password"}

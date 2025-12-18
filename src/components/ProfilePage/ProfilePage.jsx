@@ -9,7 +9,8 @@ import { apiInstance } from "../../api/axios.js";
 
 const Profile = () => {
   const [date, setDate] = useState();
-  const [emailError, setEmailError] = useState("");
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [image, setImage] = useState(null);
   const genderOptions = [
     { value: "F", label: "زن" },
@@ -131,17 +132,18 @@ const Profile = () => {
   const handleEmailValidation = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError("ایمیل باید به فرمت user@example.com باشد!");
-      return false;
+      setEmailErrorMessage("ایمیل باید به فرمت user@example.com باشد!");
+      setErrorEmail(true);
+    } else {
+      setEmailErrorMessage("");
+      setErrorEmail(false);
     }
-    return true;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (e.target.name === "email") {
       handleEmailValidation(value);
-      console.log(emailError);
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -233,6 +235,8 @@ const Profile = () => {
           <h5 className="profile-card__header">اطلاعات حساب کاربری</h5>
           <div className="profile-card__container">
             <TextField
+              error={errorEmail}
+              helperText={emailErrorMessage}
               required
               name="email"
               label="ایمیل"
