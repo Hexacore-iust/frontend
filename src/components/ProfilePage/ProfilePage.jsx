@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, Button } from "@mui/material";
+import { TextField, MenuItem, Button, ButtonBase, Avatar } from "@mui/material";
 import CustomDatePicker from "../DatePicker/DatePicker";
-import axios from "axios";
 import { baseUrl } from "../../config";
 import ChangePassword from "./ChangePassword/ChangePassword";
 import FileUpload from "./FileUpload..jsx";
 import "./ProfilePage.styles.scss";
+import { apiInstance } from "../../api/axios.js";
 
 const Profile = () => {
   const [date, setDate] = useState();
-  const [emailError, setEmailError] = useState("");
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [image, setImage] = useState(null);
   const genderOptions = [
     { value: "F", label: "زن" },
@@ -30,8 +31,6 @@ const Profile = () => {
     job: "",
   });
 
-  const token = JSON.parse(localStorage.getItem("token"));
-
   const handleChangeDate = (value) => {
     setDate((prev) => ({
       ...prev,
@@ -44,41 +43,38 @@ const Profile = () => {
   };
 
   const getProfile = () => {
-    axios({
-      method: "get",
-      headers: { Authorization: `Bearer ${token}` },
-      url: `${baseUrl}/api/auth/profile/`,
-    }).then(function (response) {
-      console.log("res", response);
-      const {
-        email,
-        username,
-        first_name,
-        last_name,
-        phone_number,
-        avatar,
-        date_of_birth,
-        gender,
-        job_title,
-        city_of_residence,
-      } = response.data;
+    apiInstance.get("/api/auth/profile/").then((response) => {
+      if (response) {
+        const {
+          email,
+          username,
+          first_name,
+          last_name,
+          phone_number,
+          avatar,
+          date_of_birth,
+          gender,
+          job_title,
+          city_of_residence,
+        } = response.data;
 
-      const fullAvatarUrl = avatar ? `${baseUrl}${avatar}` : null;
-      const formattedDate = date_of_birth ? new Date(date_of_birth) : null;
+        const fullAvatarUrl = avatar ? `${baseUrl}${avatar}` : null;
+        const formattedDate = date_of_birth ? new Date(date_of_birth) : null;
 
-      setFormData({
-        email: email,
-        username: username,
-        firstName: first_name,
-        lastName: last_name,
-        phoneNumber: phone_number,
-        profilePicture: fullAvatarUrl,
-        birthDate: formattedDate,
-        gender: gender,
-        job: job_title,
-        city: city_of_residence,
-      });
-      setDate(date_of_birth);
+        setFormData({
+          email: email,
+          username: username,
+          firstName: first_name,
+          lastName: last_name,
+          phoneNumber: phone_number,
+          profilePicture: fullAvatarUrl,
+          birthDate: formattedDate,
+          gender: gender,
+          job: job_title,
+          city: city_of_residence,
+        });
+        setDate(date_of_birth);
+      }
     });
   };
 
@@ -95,7 +91,7 @@ const Profile = () => {
 
     return `${year}-${month}-${day}`;
   };
-  const handleFormUpdate = async () => {
+  const handleFormUpdate = () => {
     const formDataToSend = new FormData();
 
     const appendIfNotEmpty = (key, value) => {
@@ -120,21 +116,13 @@ const Profile = () => {
       toUtcMidnightISOString(formData.birthDate)
     );
 
-    try {
-      const response = await axios.patch(
-        `${baseUrl}/api/auth/profile/update/`,
-        formDataToSend,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("Profile updated successfully", response.data);
-    } catch (error) {
-      console.error("Error updating profile", error);
-    }
+    apiInstance
+      .patch("/api/auth/profile/update/", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then();
   };
 
   useEffect(() => {
@@ -144,17 +132,18 @@ const Profile = () => {
   const handleEmailValidation = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError("ایمیل باید به فرمت user@example.com باشد!");
-      return false;
+      setEmailErrorMessage("ایمیل باید به فرمت user@example.com باشد!");
+      setErrorEmail(true);
+    } else {
+      setEmailErrorMessage("");
+      setErrorEmail(false);
     }
-    return true;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (e.target.name === "email") {
       handleEmailValidation(value);
-      console.log(emailError);
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -193,25 +182,50 @@ const Profile = () => {
     <div className="profile-card">
       <div className="profile-card__inner">
         {/* User Avatar Section */}
-        <div className="profile-card__avatar-section">
-          <div className="profile-card__avatar-circle">
-            {formData.profilePicture && (
-              <img
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <div>
+            <ButtonBase
+              component="label"
+              tabIndex={-1}
+              aria-label="Avatar image"
+              sx={{
+                borderRadius: "40px",
+                width: "150px",
+                "&:has(:focus-visible)": {
+                  outline: "2px solid",
+                  outlineOffset: "2px",
+                },
+              }}
+            >
+              <Avatar
+                alt="Upload new avatar"
                 src={formData.profilePicture || "../../assets/pics/profile.jpg"}
-                alt="profile"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                sx={{ width: "150px", height: "150px" }}
               />
-            )}
-          </div>
-          <div className="profile-card__avatar-btn">
-            <span className="change-button">
               <input
-                className="profile-card__file-input"
                 type="file"
+                accept="image/*"
+                style={{
+                  border: 0,
+                  clip: "rect(0 0 0 0)",
+                  height: "1px",
+                  margin: "-1px",
+                  overflow: "hidden",
+                  padding: 0,
+                  position: "absolute",
+                  whiteSpace: "nowrap",
+                  width: "1px",
+                }}
                 onChange={handleProfilePictureChange}
               />
-              +
-            </span>
+            </ButtonBase>
           </div>
         </div>
 
@@ -221,6 +235,8 @@ const Profile = () => {
           <h5 className="profile-card__header">اطلاعات حساب کاربری</h5>
           <div className="profile-card__container">
             <TextField
+              error={errorEmail}
+              helperText={emailErrorMessage}
               required
               name="email"
               label="ایمیل"
