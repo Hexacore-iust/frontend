@@ -4,13 +4,12 @@ import Button from "@mui/material/Button";
 import { apiInstance } from "../../../api/axios";
 
 const DashboardFilterMeeting = (props) => {
-  const { title, upcomingMeetings } = props;
+  const { title, upcomingMeetings, setDateFilteredSchedule, setFilter } = props;
 
   const [date, setDate] = useState({
     start: new Date(),
     end: new Date(),
   });
-  console.log("start", date.start);
 
   const handleChangeStart = (value) => {
     setDate((prev) => ({
@@ -44,8 +43,8 @@ const DashboardFilterMeeting = (props) => {
         end,
       })
       .then((res) => {
-        console.log("upcoming tasks in range:", res.data);
-        return res.data;
+        setDateFilteredSchedule(res.data.items);
+        setFilter("قرار های ملاقات پیش رو:");
       });
   };
 

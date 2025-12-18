@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { apiInstance } from "../../api/axios";
-import { scheduleToday } from "../../homepage-mockdata";
 import "./Dashboard.styles.scss";
 import CustomAccordion from "../Accordion/CustomAccordion";
 import DashboardFilterMeeting from "./DashBoardFilter/DashboardFilterMeeting";
@@ -9,7 +8,9 @@ import DashboardFilterTaskOverdue from "./DashBoardFilter/DashboardFilterTaskOve
 import DashboardFilterTasks from "./DashBoardFilter/DashboardFilterTasks";
 
 const Dashboard = () => {
-  const { schedule } = scheduleToday;
+  const [schedule, setSchedule] = useState([]);
+  const [filter, setFilter] = useState("");
+  const [dateFilteredSchedule, setDateFilteredSchedule] = useState([]);
 
   const [statistics, setStatistics] = useState({
     overdue_tasks: 0,
@@ -38,7 +39,7 @@ const Dashboard = () => {
     apiInstance
       .get("/api/homepage/schedule/today")
       .then((response) => {
-        console.log("res", response);
+        setSchedule(response.data.schedule);
       })
       .catch((err) => {
         console.error(err);
@@ -73,56 +74,103 @@ const Dashboard = () => {
         <DashboardFilterMeeting
           title={"قرار های پیش رو"}
           upcomingMeetings={statistics.upcoming_meetings}
-        />
+          setDateFilteredSchedule={setDateFilteredSchedule}
+          setFilter = {setFilter}
+          />
 
         <DashboardFilterTasks
           title={"کار های پیش رو"}
           upcomingTasks={statistics.upcoming_tasks}
-        />
+          setDateFilteredSchedule={setDateFilteredSchedule}
+          setFilter = {setFilter}
+          />
 
         <DashboardFilterTaskOverdue
           title={"کار های باقی مانده"}
           upcomingTasksOverdue={statistics.overdue_tasks}
+          setDateFilteredSchedule={setDateFilteredSchedule}
+          setFilter = {setFilter}
         />
       </div>
 
-      <div className="today-plan">
-        <h3>برنامه امروز من:</h3>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-          }}
-        >
-          {schedule.map((item) => {
-            return (
-              <CustomAccordion
-                key={item.id}
-                summary={item.title}
-                detailsChildren={
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "8px",
-                      flexDirection: "column",
-                      color: "#777",
-                    }}
-                  >
-                    <div>{item.description}</div>
-                    <div>
-                      {toHM(item.end_time)}
-                      {item.end_time ? " - " : <></>}
-                      {toHM(item.start_time)}
+      <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+        <div className="today-plan">
+          <h3>برنامه امروز من:</h3>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}
+          >
+            {schedule.map((item) => {
+              return (
+                <CustomAccordion
+                  key={item.id}
+                  summary={item.title}
+                  detailsChildren={
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        flexDirection: "column",
+                        color: "#777",
+                      }}
+                    >
+                      <div>{item.description}</div>
+                      <div>
+                        {toHM(item.end_time)}
+                        {item.end_time ? " - " : <></>}
+                        {toHM(item.start_time)}
+                      </div>
+                      <div>{toHM(item.time)}</div>
                     </div>
-                    <div>{toHM(item.time)}</div>
-                  </div>
-                }
-                hasAction={false}
-                color={item.category.color}
-              />
-            );
-          })}
+                  }
+                  hasAction={false}
+                  color={item.category.color}
+                />
+              );
+            })}
+          </div>
+        </div>
+        <div className="today-plan">
+          <h3>{filter} </h3>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}
+          >
+            {dateFilteredSchedule.map((item) => {
+              return (
+                <CustomAccordion
+                  key={item.id}
+                  summary={item?.title}
+                  detailsChildren={
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        flexDirection: "column",
+                        color: "#777",
+                      }}
+                    >
+                      <div>{item?.description}</div>
+                      <div>
+                        {toHM(item?.end_time)}
+                        {item?.end_time ? " - " : <></>}
+                        {toHM(item?.start_time)}
+                      </div>
+                      <div>{toHM(item?.time)}</div>
+                    </div>
+                  }
+                  hasAction={false}
+                  color={item?.category?.color}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

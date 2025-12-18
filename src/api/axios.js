@@ -43,7 +43,6 @@ apiInstance.interceptors.request.use(
 );
 
 const refreshTokenRequest = async () => {
-  console.log("sahar");
   const refreshToken = tokenStorage.getRefresh();
 
   if (!refreshToken) {
