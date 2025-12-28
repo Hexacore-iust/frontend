@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { tokenStorage } from "../api/axios";
 import "../assets/styles/LoginForm.css";
 
 const LoginPage = () => {
@@ -9,6 +12,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -62,11 +66,12 @@ const LoginPage = () => {
         setSuccess("Login successful! Redirecting...");
 
         // Save user info to localStorage
-        localStorage.setItem("token", JSON.stringify(data.tokens.access));
+        tokenStorage.setTokens(data.tokens.access, data.tokens.refresh);
 
         // // Redirect after success
         // setTimeout(() => {
-        window.location.href = "/homepage"; // Change to your desired redirect page
+        navigate("/homepage");
+        // Change to your desired redirect page
         // }, 1500);
       } else {
         // Handle error response

@@ -3,36 +3,30 @@ import Button from "@mui/material/Button";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { baseUrl } from "../../config";
-import axios from "axios";
+import { apiInstance } from "../../api/axios.js";
 
 const FileUpload = () => {
   const [files, setFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [showFileBox, setShowFileBox] = useState(false);
-  const token = JSON.parse(localStorage.getItem("token"));
 
   useEffect(() => {
-    fetchUploadedFiles(token);
+    fetchUploadedFiles();
   }, []);
 
-  const fetchUploadedFiles = async (token) => {
-    try {
-      const response = await axios.get(`${baseUrl}/api/auth/files/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // "Content-Type": "application/json",
-        },
-      });
-      setFiles(response.data.files || []);
-    } catch (error) {
-      console.error("Error fetching files:", error);
-    }
+  const fetchUploadedFiles = () => {
+    apiInstance.get("/api/auth/files/").then((response) => {
+      if (response) {
+        setFiles(response.data.files || []);
+      }
+    });
   };
 
   const handleFileChange = (e) => {
-    const selectedFiles = e.target.files;
-    setFiles((prevFiles) => [
+    const newFile = e.target.files;
+    setSelectedFiles((prevFiles) => [
       ...prevFiles,
-      ...Array.from(selectedFiles).map((file) => ({
+      ...Array.from(newFile).map((file) => ({
         file: URL.createObjectURL(file),
         original_name: file.name,
         fileData: file,
@@ -40,62 +34,45 @@ const FileUpload = () => {
     ]);
   };
 
-  const handleFileDelete = async (fileId) => {
+  const handleFileDelete = (fileId) => {
     try {
-      await deleteFile(fileId, token);
+      deleteFile(fileId);
       setFiles(files.filter((file) => file.id !== fileId));
     } catch (error) {
       console.error("Error deleting file:", error);
     }
+  };
+  const handleNotUploadedFileDelete = (fileId) => {
+    setSelectedFiles((prevFiles) =>
+      prevFiles.filter((file) => file.id !== fileId)
+    );
   };
 
   const handleShowFileBox = () => {
     setShowFileBox((prevState) => !prevState);
   };
 
-  const uploadFiles = async (files, token) => {
+  const uploadFiles = (selectedFiles) => {
     const formData = new FormData();
-    files.forEach((file) => {
+    selectedFiles.forEach((file) => {
       formData.append("files", file.fileData);
     });
 
-    try {
-      const response = await axios.post(
-        `${baseUrl}/api/auth/files/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    apiInstance.post("/api/auth/files/").then((response) => {
       console.log("Files uploaded successfully:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error uploading files:", error);
-    }
+    });
   };
 
-  const deleteFile = async (fileId, token) => {
-    try {
-      const response = await axios.delete(
-        `${baseUrl}/api/auth/files/${fileId}/delete/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("File deleted successfully:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting file:", error);
-    }
+  const deleteFile = (fileId) => {
+    apiInstance.delete(`/api/auth/files/${fileId}/delete/`, fileId);
+    // .then((response) => {
+    //   if (response) {
+    //     return response.data;
+    //   }
+    // });
   };
 
-  const handleFileSubmit = async (e) => {
+  const handleFileSubmit = (e) => {
     e.preventDefault();
     if (files.length === 0) {
       console.error("No files selected for upload");
@@ -103,8 +80,7 @@ const FileUpload = () => {
     }
 
     try {
-      // Upload the new files
-      const uploaded = await uploadFiles(files, token);
+      const uploaded = uploadFiles(selectedFiles);
 
       const allFiles = [...uploaded.files, ...files];
 
@@ -167,9 +143,39 @@ const FileUpload = () => {
 
                       <Button
                         onClick={() => handleFileDelete(file.id)}
-                        style={{ marginLeft: "10px" }}
+                        style={{ marginLeft: "10px", color: "#ff9d00" }}
                       >
                         حذف
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {selectedFiles.length > 0 && (
+                <ul>
+                  {selectedFiles.map((file, index) => (
+                    <li key={index}>
+                      {/* Display file name */}
+                      {file.file && (
+                        <img
+                          src={`${file.file}`}
+                          style={{
+                            width: "30px",
+                            height: "30px",
+                            objectFit: "cover",
+                            marginLeft: "10px",
+                            marginRight: "10px",
+                          }}
+                        />
+                      )}
+                      {file.original_name}
+
+                      <Button
+                        onClick={() => handleNotUploadedFileDelete(file.id)}
+                        style={{ marginLeft: "10px", color: "#ff9d00" }}
+                      >
+                        انصراف از آپلود
                       </Button>
                     </li>
                   ))}
