@@ -93,14 +93,23 @@ const TasksPage = () => {
 
       const response = await fetch(url, { headers });
       if (!response.ok) {
-        const err = await response.json();
-        if (err.detail?.includes('token_not_valid')) {
-          tokenStorage.clear();
-          alert('نشست منقضی شده. لطفاً دوباره وارد شوید.');
-          return;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const err = await response.json();
+          if (err.detail?.includes('token_not_valid')) {
+            tokenStorage.clear();
+            alert('نشست منقضی شده. لطفاً دوباره وارد شوید.');
+            return;
+          }
+          throw new Error(err.detail || 'دریافت تسک‌ها با خطا مواجه شد.');
         }
-        throw new Error('دریافت تسک‌ها با خطا مواجه شد.');
+
+        const text = await response.text();
+        console.error('NON-JSON ERROR RESPONSE:', text);
+
+        throw new Error('پاسخ غیرمنتظره از سرور (احتمالاً خطای احراز هویت یا تنظیمات سرور)');
       }
+
 
       const rawData = await response.json();
       const tasksArray = rawData.tasks || rawData;
@@ -172,7 +181,7 @@ const TasksPage = () => {
       let response;
       if (editTask) {
         // Update
-        response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${editTask.id}/update`, {
+        response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${editTask.id}/update/`, {
           method: 'PATCH',
           headers,
           body: JSON.stringify(payload),
