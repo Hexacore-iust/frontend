@@ -18,6 +18,31 @@ export const tokenStorage = {
   },
 };
 
+export const refreshAccessToken = async () => {
+  const refreshToken = tokenStorage.getRefresh();
+  if (!refreshToken) return null;
+
+  try {
+    const response = await fetch(
+      'https://hexacore-iust-backend.liara.run/api/token/refresh/',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh: refreshToken }),
+      }
+    );
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+
+    tokenStorage.setTokens(data.access, null); // فقط access عوض می‌شود
+    return data.access;
+  } catch (e) {
+    return null;
+  }
+};
+
 export const apiInstance = axios.create({
   baseURL: baseUrl,
   headers: { "Content-Type": "application/json" },

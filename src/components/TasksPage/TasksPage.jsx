@@ -7,6 +7,7 @@ import {
 import { SlCalender, SlMagnifier, SlShare } from 'react-icons/sl';
 import PersianDate from 'persian-date';
 import { tokenStorage } from "../../api/axios.js";
+import { authFetch } from '../../api/authFetch';
 
 // Handles { message, task: { ... } } or direct task
 const normalizeTask = (task) => {
@@ -91,7 +92,7 @@ const TasksPage = () => {
       const token = tokenStorage.getAccess();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-      const response = await fetch(url, { headers });
+      const response = await authFetch(url);
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
@@ -181,14 +182,14 @@ const TasksPage = () => {
       let response;
       if (editTask) {
         // Update
-        response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${editTask.id}/update/`, {
+        response = await authFetch(`https://hexacore-iust-backend.liara.run/api/tasks/${editTask.id}/update/`, {
           method: 'PATCH',
           headers,
           body: JSON.stringify(payload),
         });
       } else {
         // Create
-        response = await fetch('https://hexacore-iust-backend.liara.run/api/tasks/create/', {
+        response = await authFetch('https://hexacore-iust-backend.liara.run/api/tasks/create/', {
           method: 'POST',
           headers,
           body: JSON.stringify(payload),
@@ -252,7 +253,7 @@ const TasksPage = () => {
         return;
       }
 
-      const response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${deleteTask.id}/delete`, {
+      const response = await authFetch(`https://hexacore-iust-backend.liara.run/api/tasks/${deleteTask.id}/delete`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
