@@ -252,7 +252,7 @@ const TasksPage = () => {
         return;
       }
 
-      const response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${deleteTask.id}/delete`, {
+      const response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${deleteTask.id}/delete/`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
