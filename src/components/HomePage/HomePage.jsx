@@ -69,7 +69,7 @@ const HomePage = () => {
   console.log("width", width);
   console.log("elementRef", elementRef.current?.clientWidth);
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", backgroundColor: "white" }}>
       <div
         style={{
           position: "relative",

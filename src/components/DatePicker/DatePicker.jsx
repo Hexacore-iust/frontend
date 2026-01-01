@@ -1,13 +1,17 @@
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFnsJalali } from "@mui/x-date-pickers/AdapterDateFnsJalali";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { faIR } from "date-fns-jalali/locale";
 
 const CustomDatePicker = (props) => {
   const { label, dateValue, handleChangeDate, fullWidth } = props;
 
   return (
     <>
-      <LocalizationProvider dateAdapter={AdapterDateFnsJalali}>
+      <LocalizationProvider
+        dateAdapter={AdapterDateFnsJalali}
+        adapterLocale={faIR}
+      >
         <DatePicker
           label={label}
           value={dateValue}
