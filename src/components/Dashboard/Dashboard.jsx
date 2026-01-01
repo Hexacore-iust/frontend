@@ -93,7 +93,7 @@ const Dashboard = () => {
         />
       </div>
 
-      <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+      <div className="today-plans-wrapper">
         <div className="today-plan">
           <h3>برنامه امروز من:</h3>
           <div
@@ -137,49 +137,51 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        <div className="today-plan">
-          <h3>{filter} </h3>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            {dateFilteredSchedule.length === 0 ? (
-              <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد</p>
-            ) : (
-              dateFilteredSchedule.map((item) => {
-                return (
-                  <CustomAccordion
-                    key={item.id}
-                    summary={item?.title}
-                    detailsChildren={
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "8px",
-                          flexDirection: "column",
-                          color: "#777",
-                        }}
-                      >
-                        <div>{item?.description}</div>
-                        <div>
-                          {toHM(item?.end_time)}
-                          {item?.end_time ? " - " : <></>}
-                          {toHM(item?.start_time)}
+        {filter && (
+          <div className="today-plan">
+            <h3>{filter} </h3>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+              }}
+            >
+              {dateFilteredSchedule.length === 0 ? (
+                <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد</p>
+              ) : (
+                dateFilteredSchedule.map((item) => {
+                  return (
+                    <CustomAccordion
+                      key={item.id}
+                      summary={item?.title}
+                      detailsChildren={
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            flexDirection: "column",
+                            color: "#777",
+                          }}
+                        >
+                          <div>{item?.description}</div>
+                          <div>
+                            {toHM(item?.end_time)}
+                            {item?.end_time ? " - " : <></>}
+                            {toHM(item?.start_time)}
+                          </div>
+                          <div>{toHM(item?.time)}</div>
                         </div>
-                        <div>{toHM(item?.time)}</div>
-                      </div>
-                    }
-                    hasAction={false}
-                    color={item?.category?.color}
-                  />
-                );
-              })
-            )}
+                      }
+                      hasAction={false}
+                      color={item?.category?.color}
+                    />
+                  );
+                })
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
