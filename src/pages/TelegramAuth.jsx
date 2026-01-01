@@ -6,6 +6,7 @@ import { tokenStorage } from "../api/axios";
 const TelegramAuth = () => {
   const [status, setStatus] = useState("loading"); // loading | error | no-telegram
   const navigate = useNavigate();
+  const [initDataText, setInitDataText] = useState("");
 
   useEffect(() => {
     const existingAccess = tokenStorage.getAccess();
@@ -16,6 +17,7 @@ const TelegramAuth = () => {
 
     const tg = window.Telegram?.WebApp;
     const initData = tg?.initData;
+    setInitDataText(initData);
 
     if (!initData) {
       setStatus("no-telegram");
@@ -55,7 +57,12 @@ const TelegramAuth = () => {
     return <div style={{ padding: 16 }}>خطا در ورود با تلگرام.</div>;
   }
 
-  return <div style={{ padding: 16 }}>در حال ورود از طریق تلگرام...</div>;
+  return (
+    <div style={{ padding: 16 }}>
+      "initData" {initDataText}
+      در حال ورود از طریق تلگرام...
+    </div>
+  );
 };
 
 export default TelegramAuth;
