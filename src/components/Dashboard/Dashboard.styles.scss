@@ -5,39 +5,24 @@ $border-radius: 10px;
 $padding: 20px;
 $box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
-.home-page-container {
-  display: flex;
-  height: 100vh;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
 .content-wrapper {
   padding: $padding;
   display: flex;
   flex-direction: column;
   flex: 1;
-  //   width: calc(100% - 256px);
-}
-
-.text-blocks {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
 }
 
 .task-blocks {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
   margin-bottom: 20px;
-  gap: 64px;
+
   &__statistic-box {
-    width: 330px;
-    height: 180px;
+    width: 100%;
+    // min-width: 330px;
+    height: auto;
+    min-height: 180px;
     background-color: $block-background;
     padding: 15px;
     border-radius: $border-radius;
@@ -48,40 +33,58 @@ $box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       justify-content: space-between;
       gap: 8px;
       margin-bottom: 16px;
+
       h3 {
         color: #777;
       }
     }
+
     &__date {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 8px;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      input {
+        width: 100%;
+        min-width: 0;
+      }
     }
+  }
+}
+
+.today-plans-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: stretch;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
   }
 }
 
 .today-plan {
   background-color: $block-background;
-  padding: 15px;
   box-shadow: $box-shadow;
   padding: $padding;
   border-radius: $border-radius;
   margin-bottom: 20px;
   flex: 1;
+  min-width: 340px;
+
+  @media (max-width: 992px) {
+    min-width: 0;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
   h3 {
     margin-bottom: 24px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .task-blocks {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .block {
-    width: 100%;
-    margin-bottom: 15px;
   }
 }
