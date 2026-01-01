@@ -4,10 +4,8 @@ import Landing from "./pages/Landing";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import OTPVerification from "./components/OTPPage";
-import Chat from "./pages/Chat";
 import HomePage from "./components/HomePage/HomePage";
-import Dashboard from "./components/Dashboard/Dashboard";
-import TaskManagementPage from "./components/TaskManagement/TaskManagement2";
+import TelegramAuth from "./pages/TelegramAuth";
 
 const App = () => {
   return (
@@ -18,6 +16,7 @@ const App = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/telegram-auth" element={<TelegramAuth />} />
           <Route
             path="/otp-verification"
             element={<OTPVerification email="user@example.com" />}
