@@ -62,7 +62,7 @@ const TelegramAuth = () => {
       <div style={{ padding: 16 }}>
         خطا در ورود با تلگرام. "initData" {initDataText}
         <div>
-          {"response"}
+          response
           {responseText}
         </div>
       </div>
