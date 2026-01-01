@@ -7,6 +7,7 @@ const TelegramAuth = () => {
   const [status, setStatus] = useState("loading"); // loading | error | no-telegram
   const navigate = useNavigate();
   const [initDataText, setInitDataText] = useState("");
+  const [responseText, setResponseText] = useState("");
 
   useEffect(() => {
     const existingAccess = tokenStorage.getAccess();
@@ -28,6 +29,7 @@ const TelegramAuth = () => {
 
     telegramLoginRequest(initData)
       .then((res) => {
+        setResponseText(res);
         const data = res.data;
 
         const access = data?.tokens?.access || data?.access;
@@ -59,6 +61,10 @@ const TelegramAuth = () => {
     return (
       <div style={{ padding: 16 }}>
         خطا در ورود با تلگرام. "initData" {initDataText}
+        <div>
+          {"response"}
+          {responseText}
+        </div>
       </div>
     );
   }
