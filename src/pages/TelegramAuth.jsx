@@ -45,7 +45,7 @@ const TelegramAuth = () => {
       })
       .catch((err) => {
         console.error("Telegram login error:", err);
-        setResponseText(err);
+        setResponseText(err.error);
         setStatus("error");
       });
   }, [navigate]);
