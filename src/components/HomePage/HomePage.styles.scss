@@ -26,21 +26,8 @@ $box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-top: 8px;
 }
 
-.text-blocks {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-.task-blocks {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
 .block {
-  width: 32%;
-  height: 123px;
+
   background-color: $block-background;
   padding: 15px;
   border-radius: $border-radius;

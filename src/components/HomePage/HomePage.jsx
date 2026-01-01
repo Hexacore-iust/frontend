@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FaHome, FaUserAlt, FaRobot, FaTasks } from "react-icons/fa";
 import "./HomePage.styles.scss";
 import SideBar from "../SideBar/SideBar";
@@ -39,12 +39,12 @@ const HomePage = () => {
   };
 
   const elementRef = useRef(null);
-  // const [width, setWidth] = useState(0);
-  // const updateWidth = () => {
-  //   if (elementRef.current) {
-  //     setWidth(elementRef.current?.clientWidth);
-  //   }
-  // };
+  const [width, setWidth] = useState(0);
+  const updateWidth = () => {
+    if (elementRef.current) {
+      setWidth(elementRef.current?.clientWidth);
+    }
+  };
   let content;
   switch (contentType) {
     case "dashboard":
@@ -54,7 +54,6 @@ const HomePage = () => {
       content = <Profile />;
       break;
     case "assistant":
-      // content = <AssistantPage />;
       content = <ChatPage />;
       break;
     case "tasks":
@@ -64,11 +63,11 @@ const HomePage = () => {
       content = <Dashboard />;
   }
 
-  // useEffect(() => {
-  //   updateWidth();
-  // }, []);
-  // console.log("width", width);
-  // console.log("elementRef", elementRef.current?.clientWidth);
+  useEffect(() => {
+    updateWidth();
+  }, []);
+  console.log("width", width);
+  console.log("elementRef", elementRef.current?.clientWidth);
   return (
     <div style={{ position: "relative" }}>
       <div
@@ -94,15 +93,17 @@ const HomePage = () => {
             contentType={contentType}
           />
         </div>
-        {/* <div
+        <div
           style={{
             // marginRight: `${width}px`,
+            // width: `calc(100% - ${width}px)`,
             width: "100%",
-            height: "100vh",
+            flex: 1,
+            minHeight: 0,
           }}
-        > */}
-        {content}
-        {/* </div> */}
+        >
+          {content}
+        </div>
       </div>
       <div
         style={{
