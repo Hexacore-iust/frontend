@@ -49,12 +49,18 @@ const TelegramAuth = () => {
 
   if (status === "no-telegram") {
     return (
-      <div style={{ padding: 16 }}>این صفحه باید داخل تلگرام باز شود.</div>
+      <div style={{ padding: 16 }}>
+        این صفحه باید داخل تلگرام باز شود. "initData" {initDataText}
+      </div>
     );
   }
 
   if (status === "error") {
-    return <div style={{ padding: 16 }}>خطا در ورود با تلگرام.</div>;
+    return (
+      <div style={{ padding: 16 }}>
+        خطا در ورود با تلگرام. "initData" {initDataText}
+      </div>
+    );
   }
 
   return (
