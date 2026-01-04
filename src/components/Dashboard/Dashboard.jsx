@@ -133,7 +133,7 @@ const Dashboard = () => {
                 />
               </div>
             ) : schedule.length === 0 ? (
-              <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد</p>
+              <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد.</p>
             ) : (
               schedule.map((item) => {
                 return (
@@ -183,7 +183,7 @@ const Dashboard = () => {
                   style={{ marginRight: 8 }}
                 />
               ) : dateFilteredSchedule.length === 0 ? (
-                <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد</p>
+                <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد.</p>
               ) : (
                 dateFilteredSchedule.map((item) => {
                   return (
