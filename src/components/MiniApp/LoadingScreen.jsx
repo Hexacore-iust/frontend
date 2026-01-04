@@ -1,4 +1,4 @@
-import "./LoadingScreen.scss";
+import "./LoadingScreen.styles.scss";
 
 const LoadingScreen = ({ text = "در حال ورود..." }) => {
   return (
