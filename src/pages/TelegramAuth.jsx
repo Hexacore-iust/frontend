@@ -41,7 +41,7 @@ const TelegramAuth = () => {
       })
       .catch((err) => {
         console.error(err);
-        setErrorText("ورود با تلگرام ناموفق بود");
+        setErrorText("ورود با تلگرام ناموفق بود!");
         setStatus("error");
       });
   }, [navigate]);
@@ -51,19 +51,11 @@ const TelegramAuth = () => {
   }
 
   if (status === "no-telegram") {
-    return (
-      <div style={{ padding: 24 }}>
-        ❌ این صفحه باید داخل تلگرام باز شود
-      </div>
-    );
+    return <LoadingScreen text="این صفحه باید در تلگرام باز شود!❌" />;
   }
 
   if (status === "error") {
-    return (
-      <div style={{ padding: 24 }}>
-        ❌ {errorText}
-      </div>
-    );
+    return <LoadingScreen text={`❌ ${errorText}`} />;
   }
 
   return null;
