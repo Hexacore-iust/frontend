@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Alert, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { telegramLoginRequest } from "../api/auth";
 import { tokenStorage } from "../api/axios";
@@ -47,7 +48,16 @@ const TelegramAuth = () => {
   }, [navigate]);
 
   if (status === "loading") {
-    return <LoadingScreen text="در حال ورود از طریق تلگرام…" />;
+    return (
+      <>
+        <LoadingScreen text="در حال ورود از طریق تلگرام…" />;
+        <CircularProgress
+          size={18}
+          color="inherit"
+          sx={{ mr: 1, marginLeft: "12px" }}
+        />
+      </>
+    );
   }
 
   if (status === "no-telegram") {
