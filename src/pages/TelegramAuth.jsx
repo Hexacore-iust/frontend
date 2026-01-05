@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Alert, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { telegramLoginRequest } from "../api/auth";
 import { tokenStorage } from "../api/axios";
@@ -41,29 +42,30 @@ const TelegramAuth = () => {
       })
       .catch((err) => {
         console.error(err);
-        setErrorText("ورود با تلگرام ناموفق بود");
+        setErrorText("ورود با تلگرام ناموفق بود!");
         setStatus("error");
       });
   }, [navigate]);
 
   if (status === "loading") {
-    return <LoadingScreen text="در حال ورود از طریق تلگرام…" />;
+    return (
+      <>
+        <LoadingScreen text="در حال ورود از طریق تلگرام…" />;
+        <CircularProgress
+          size={18}
+          color="inherit"
+          sx={{ mr: 1, marginLeft: "12px" }}
+        />
+      </>
+    );
   }
 
   if (status === "no-telegram") {
-    return (
-      <div style={{ padding: 24 }}>
-        ❌ این صفحه باید داخل تلگرام باز شود
-      </div>
-    );
+    return <LoadingScreen text="این صفحه باید در تلگرام باز شود!❌" />;
   }
 
   if (status === "error") {
-    return (
-      <div style={{ padding: 24 }}>
-        ❌ {errorText}
-      </div>
-    );
+    return <LoadingScreen text={`❌ ${errorText}`} />;
   }
 
   return null;

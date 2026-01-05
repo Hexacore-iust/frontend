@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { apiInstance } from "../../../api/axios";
 import { IconButton, InputAdornment, TextField, Button } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,13 +20,14 @@ const ChangePassword = () => {
     newPassError: false,
     repeatedPassError: false,
   });
-
-  console.log(errorMessage);
   const [password, setPassword] = useState({
     currentPassword: "",
     newPassword: "",
     repeatedPassword: "",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const { currentPassword, newPassword, repeatedPassword } = password;
 
@@ -43,12 +46,23 @@ const ChangePassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError({
+      currentPassError: false,
+      newPassError: false,
+      repeatedPassError: false,
+    });
+    setErrorMessage({ currentPass: "", newPass: "", repeatedPass: "" });
+    setLoading(true);
+    setSuccess(false);
 
     apiInstance
       .patch("/api/auth/profile/update/", {
         current_password: currentPassword,
         new_password: newPassword,
         confirm_new_password: repeatedPassword,
+      })
+      .then(() => {
+        setSuccess(true);
       })
       .catch((err) => {
         if (err.response.status === 400) {
@@ -83,8 +97,20 @@ const ChangePassword = () => {
             }));
           }
         }
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   return (
     <>
@@ -199,8 +225,20 @@ const ChangePassword = () => {
               }}
             >
               تغییر رمزعبور
+              {loading && (
+                <CircularProgress
+                  size={18}
+                  color="inherit"
+                  style={{ marginRight: 8 }}
+                />
+              )}
             </Button>
           </div>
+          {success && (
+            <Alert severity="success" sx={{ width: "fit-content" }}>
+              رمزعبور با موفقیت تغییر کرد
+            </Alert>
+          )}
         </form>
       )}
     </>

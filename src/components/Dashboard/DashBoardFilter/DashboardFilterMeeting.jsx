@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import DatePicker from "../../DatePicker/DatePicker";
 import Button from "@mui/material/Button";
 import { apiInstance } from "../../../api/axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const DashboardFilterMeeting = (props) => {
-  const { title, upcomingMeetings, setDateFilteredSchedule, setFilter } = props;
+  const {
+    title,
+    upcomingMeetings,
+    setDateFilteredSchedule,
+    setFilter,
+    loadingStat,
+    setLoadingStat,
+  } = props;
 
   const [date, setDate] = useState({
     start: new Date(),
@@ -37,6 +45,7 @@ const DashboardFilterMeeting = (props) => {
   };
 
   const getUpcomingMeetings = (start, end) => {
+    setLoadingStat(true);
     apiInstance
       .post("/api/homepage/statistics/range/upcoming-meetings/", {
         start,
@@ -45,7 +54,8 @@ const DashboardFilterMeeting = (props) => {
       .then((res) => {
         setDateFilteredSchedule(res.data.items);
         setFilter("قرار های ملاقات پیش رو:");
-      });
+      })
+      .finally(() => setLoadingStat(false));
   };
 
   const handleSubmitDate = () => {
@@ -83,7 +93,14 @@ const DashboardFilterMeeting = (props) => {
             backgroundColor: "#00c48c",
           }}
         >
-          مشاهده بیشتر{" "}
+          مشاهده بیشتر
+          {loadingStat && (
+            <CircularProgress
+              size={18}
+              color="inherit"
+              style={{ marginRight: 8 }}
+            />
+          )}
         </Button>
       </div>
     </div>

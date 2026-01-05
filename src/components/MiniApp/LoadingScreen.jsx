@@ -3,7 +3,7 @@ import "./LoadingScreen.styles.scss";
 const LoadingScreen = ({ text = "در حال ورود..." }) => {
   return (
     <div className="loading-container">
-      <div className="__spinner" />
+      {/* <div className="__spinner" /> */}
       <p className="loading-text">{text}</p>
     </div>
   );

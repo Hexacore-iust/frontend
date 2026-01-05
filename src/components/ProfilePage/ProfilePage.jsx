@@ -1,5 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, Button, ButtonBase, Avatar } from "@mui/material";
+import { useState, useEffect } from "react";
+import {
+  TextField,
+  MenuItem,
+  Button,
+  ButtonBase,
+  Avatar,
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import defaultAvatar from "../../assets/pics/profile.jpg";
 import CustomDatePicker from "../DatePicker/DatePicker";
 import { baseUrl } from "../../config";
 import ChangePassword from "./ChangePassword/ChangePassword";
@@ -8,9 +17,13 @@ import "./ProfilePage.styles.scss";
 import { apiInstance } from "../../api/axios.js";
 
 const Profile = () => {
-  const [date, setDate] = useState();
+  const [, setDate] = useState();
   const [errorEmail, setErrorEmail] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const [image, setImage] = useState(null);
   const genderOptions = [
     { value: "F", label: "زن" },
@@ -116,18 +129,24 @@ const Profile = () => {
       toUtcMidnightISOString(formData.birthDate)
     );
 
-    apiInstance
-      .patch("/api/auth/profile/update/", formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then();
+    return apiInstance.patch("/api/auth/profile/update/", formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   };
 
   useEffect(() => {
     getProfile();
   }, []);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const handleEmailValidation = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -157,8 +176,19 @@ const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleFormUpdate();
-    console.log("Form submitted", formData);
+    setLoading(true);
+    setSuccess(false);
+
+    handleFormUpdate()
+      .then(() => {
+        setSuccess(true);
+      })
+      .catch((err) => {
+        console.error("Profile update failed:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleCancel = () => {
@@ -206,7 +236,7 @@ const Profile = () => {
             >
               <Avatar
                 alt="Upload new avatar"
-                src={formData.profilePicture || "../../assets/pics/profile.jpg"}
+                src={formData.profilePicture || defaultAvatar}
                 sx={{ width: "150px", height: "150px" }}
               />
               <input
@@ -348,6 +378,13 @@ const Profile = () => {
               }}
             >
               ثبت اطلاعات
+              {loading && (
+                <CircularProgress
+                  size={18}
+                  color="inherit"
+                  style={{ marginRight: 8 }}
+                />
+              )}
             </Button>
             <Button
               variant="contained"
@@ -359,6 +396,11 @@ const Profile = () => {
               حذف تغییرات
             </Button>
           </div>
+          {success && (
+            <Alert severity="success" sx={{ width: "fit-content", mt: 2 }}>
+              اطلاعات با موفقیت ذخیره شد.
+            </Alert>
+          )}
         </form>
 
         {/* File Upload Section */}
