@@ -17,7 +17,7 @@ import "./ProfilePage.styles.scss";
 import { apiInstance } from "../../api/axios.js";
 
 const Profile = () => {
-  const [date, setDate] = useState();
+  const [, setDate] = useState();
   const [errorEmail, setErrorEmail] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
 

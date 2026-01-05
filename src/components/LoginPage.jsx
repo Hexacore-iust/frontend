@@ -103,7 +103,9 @@ const LoginPage = () => {
       let data = {};
       try {
         data = await response.json();
-      } catch {}
+      } catch {
+        setError("خطا دوباره تلاش کنید.");
+      }
 
       if (response.ok) {
         setSuccess("ورود با موفقیت انجام شد");
@@ -230,7 +232,11 @@ const LoginPage = () => {
             >
               <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>ورود</span>
               {loading && (
-                <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
+                <CircularProgress
+                  size={18}
+                  color="inherit"
+                  sx={{ mr: 1, marginLeft: "12px" }}
+                />
               )}
             </Button>
 
