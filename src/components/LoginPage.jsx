@@ -1,107 +1,157 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  TextField,
+  IconButton,
+  InputAdornment,
+  Alert,
+  CircularProgress,
+  Button,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { tokenStorage } from "../api/axios";
 import "../assets/styles/LoginForm.css";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
   const navigate = useNavigate();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const togglePasswordVisibility = () => setShowPassword((s) => !s);
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    setError("");
+    setSuccess("");
+
+    if (!value) {
+      setEmailError("ایمیل الزامی است");
+      return;
+    }
+
+    if (!emailRegex.test(value)) {
+      setEmailError("ایمیل باید به صورت user@example.com باشد");
+      return;
+    }
+
+    setEmailError("");
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setError("");
+    setSuccess("");
+
+    if (!value) {
+      setPasswordError("رمز عبور الزامی است");
+      return;
+    }
+
+    setPasswordError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setError("Email and password are required");
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    setLoading(true);
     setError("");
     setSuccess("");
+    setEmailError("");
+    setPasswordError("");
+
+    let hasError = false;
+
+    if (!email) {
+      setEmailError("ایمیل الزامی است");
+      hasError = true;
+    } else if (!emailRegex.test(email)) {
+      setEmailError("فرمت ایمیل نادرست است");
+      hasError = true;
+    }
+
+    if (!password) {
+      setPasswordError("رمز عبور الزامی است");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    setLoading(true);
 
     try {
-      console.log("Sending login ", {
-        email: email.trim(),
-        password: password,
-      });
-
       const response = await fetch(
         "https://hexacore-iust-backend.liara.run/api/auth/login/",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            password: password,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim(), password }),
         }
       );
 
-      console.log("Response status:", response);
-
-      const data = await response.json();
-      console.log("Response ", data);
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {
+        setError("خطا دوباره تلاش کنید.");
+      }
 
       if (response.ok) {
-        setSuccess("Login successful! Redirecting...");
-
-        // Save user info to localStorage
+        setSuccess("ورود با موفقیت انجام شد");
         tokenStorage.setTokens(data.tokens.access, data.tokens.refresh);
-
-        // // Redirect after success
-        // setTimeout(() => {
         navigate("/homepage");
-        // Change to your desired redirect page
-        // }, 1500);
-      } else {
-        // Handle error response
-        setError(data.message || "Login failed. Please try again.");
+        return;
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Network error. Please check your connection and try again.");
+
+      const backendEmail = (Array.isArray(data.email) && data.email[0]) || "";
+      const backendPassword =
+        (Array.isArray(data.password) && data.password[0]) || "";
+
+      const backendGeneral =
+        data.message ||
+        data.detail ||
+        (Array.isArray(data.non_field_errors) && data.non_field_errors[0]) ||
+        "";
+
+      if (backendEmail) setEmailError(backendEmail);
+      if (backendPassword) setPasswordError(backendPassword);
+
+      if (!backendEmail && !backendPassword) {
+        setError(backendGeneral || "ورود ناموفق بود");
+      } else if (backendGeneral) {
+        setError(backendGeneral);
+      }
+    } catch {
+      setError("خطای شبکه. دوباره تلاش کنید");
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to handle forgot password
   const handleForgotPassword = (e) => {
     e.preventDefault();
 
     if (!email) {
-      setError("لطفاً ایمیل خود را وارد کنید");
+      setEmailError("لطفاً ایمیل خود را وارد کنید");
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("لطفاً یک ایمیل معتبر وارد کنید");
+      setEmailError("لطفاً یک ایمیل معتبر وارد کنید");
       return;
     }
 
-    // Redirect to OTP page with email as query parameter
     window.location.href = `/otp-verification?email=${encodeURIComponent(
       email
     )}`;
@@ -113,98 +163,82 @@ const LoginPage = () => {
         <div className="login-info">
           <div className="login-title">
             <h1>ورود</h1>
-            <div className="login-underline"></div>
+            <div className="login-underline" />
           </div>
 
           {error && (
-            <div
-              className="error-message"
-              style={{
-                color: "#ef4444",
-                backgroundColor: "#fee2e2",
-                padding: "12px",
-                borderRadius: "6px",
-                marginBottom: "16px",
-                textAlign: "center",
-              }}
-            >
+            <Alert severity="error" sx={{ width: "fit-content", mb: 2 }}>
               {error}
-            </div>
+            </Alert>
           )}
-
           {success && (
-            <div
-              className="success-message"
-              style={{
-                color: "#22c55e",
-                backgroundColor: "#dcfce7",
-                padding: "12px",
-                borderRadius: "6px",
-                marginBottom: "16px",
-                textAlign: "center",
-              }}
-            >
+            <Alert severity="success" sx={{ width: "fit-content", mb: 2 }}>
               {success}
-            </div>
+            </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="login-form">
-            <div className="login-input-group">
-              <input
-                type="email"
-                placeholder="ایمیل"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="login-input"
-                required
-              />
-            </div>
+          <form noValidate onSubmit={handleSubmit} className="login-form">
+            <TextField
+              required
+              label="ایمیل"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              error={Boolean(emailError)}
+              helperText={emailError}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
 
-            <div className="login-input-group" style={{ position: "relative" }}>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="رمز عبور"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="login-input"
-                required
-                style={{ paddingRight: "40px" }}
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "56%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#6b7280",
-                }}
-              >
-                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-              </button>
-            </div>
+            <TextField
+              required
+              label="رمز عبور"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={handlePasswordChange}
+              error={Boolean(passwordError)}
+              helperText={passwordError}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={togglePasswordVisibility} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
             <div className="login-forgot-password">
               <a
                 href="#"
-                style={{
-                  textDecoration: "underline",
-                  fontWeight: "350",
-                  fontSize: "Small",
-                }}
+                style={{ textDecoration: "underline", fontSize: "small" }}
                 onClick={handleForgotPassword}
               >
                 رمز عبور خود را فراموش کرده‌اید؟
               </a>
             </div>
-
-            <button type="submit" className="login-button" disabled={loading}>
-              {loading ? "در حال ورود..." : "ورود"}
-            </button>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 2, backgroundColor: "#00c48c" }}
+            >
+              <span style={{ fontSize: "1.2rem", fontWeight: 600 }}>ورود</span>
+              {loading && (
+                <CircularProgress
+                  size={18}
+                  color="inherit"
+                  sx={{ mr: 1, marginLeft: "12px" }}
+                />
+              )}
+            </Button>
 
             <div className="signup-login-link">
               <a href="/signup" style={{ textDecoration: "underline" }}>

@@ -2,10 +2,17 @@ import React, { useState } from "react";
 import DatePicker from "../../DatePicker/DatePicker";
 import Button from "@mui/material/Button";
 import { apiInstance } from "../../../api/axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const DashboardFilterTaskOverdue = (props) => {
-  const { title, upcomingTasksOverdue, setDateFilteredSchedule, setFilter } =
-    props;
+  const {
+    title,
+    upcomingTasksOverdue,
+    setDateFilteredSchedule,
+    setFilter,
+    loadingStat,
+    setLoadingStat,
+  } = props;
 
   const [date, setDate] = useState({
     start: new Date(),
@@ -38,6 +45,7 @@ const DashboardFilterTaskOverdue = (props) => {
   };
 
   const getUpcomingTasksOverdue = (start, end) => {
+    setLoadingStat(true);
     apiInstance
       .post("/api/homepage/statistics/range/completed-tasks/", {
         start,
@@ -46,7 +54,8 @@ const DashboardFilterTaskOverdue = (props) => {
       .then((res) => {
         setDateFilteredSchedule(res.data.items);
         setFilter("کار های باقی مانده:");
-      });
+      })
+      .finally(() => setLoadingStat(false));
   };
 
   const handleSubmitDate = () => {
@@ -84,7 +93,14 @@ const DashboardFilterTaskOverdue = (props) => {
             backgroundColor: "#00c48c",
           }}
         >
-          مشاهده بیشتر{" "}
+          مشاهده بیشتر
+          {loadingStat && (
+            <CircularProgress
+              size={18}
+              color="inherit"
+              style={{ marginRight: 8 }}
+            />
+          )}
         </Button>
       </div>
     </div>
