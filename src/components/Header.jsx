@@ -4,13 +4,10 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
 } from "@mui/material";
 
 export default function Header() {
-  const navItems = ["ارتباط با ما", "اشتراک‌ها", "قوانین و مقررات", "درباره ما"];
-
   return (
     <>
       {/* فونت وزیرمتن */}
@@ -35,45 +32,15 @@ export default function Header() {
           sx={{
             minHeight: 56,
             px: { xs: 1, md: 3 },
-            gap: { xs: 1, md: 0 },
+            justifyContent: "flex-end", // ⬅️ همه‌چی سمت راست
           }}
         >
-          {/* منو – ریسپانسیو و قابل شکستن در چند خط */}
-          <Box
-            sx={{
-              display: "flex",
-              flexGrow: 1,
-              justifyContent: { xs: "center", md: "flex-start" },
-              gap: { xs: 2, md: 4 },
-              flexWrap: "wrap", // ← اگه جا کم شد، میره خط بعد
-            }}
-          >
-            {navItems.map((item) => (
-              <Button
-                key={item}
-                sx={{
-                  color: "#357a6e",
-                  textTransform: "none",
-                  fontWeight: 500,
-                  fontSize: { xs: "0.9rem", md: "1.2rem" }, // ← کوچیک‌تر روی موبایل
-                  fontFamily: "Vazirmatn, sans-serif",
-                  minWidth: "auto",
-                  paddingX: 0,
-                  "&:hover": { color: "#0E8A62" },
-                }}
-              >
-                {item}
-              </Button>
-            ))}
-          </Box>
-
-          {/* لوگو + اسم سمت راست، با سایز ریسپانسیو */}
+          {/* لوگو + اسم */}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
               gap: 1,
-              flexShrink: 0,
             }}
           >
             <Typography

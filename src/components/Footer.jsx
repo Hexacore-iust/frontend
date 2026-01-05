@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Link as MuiLink,
-  Stack,
-  Divider,
-} from "@mui/material";
-import { Facebook, Twitter, Instagram } from "@mui/icons-material";
+import { Box, Typography, Link as MuiLink, Divider } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const footerTheme = createTheme({
@@ -26,9 +18,6 @@ export default function Footer() {
         <Box
           component="footer"
           sx={{
-                    // ⬅️ چسبیده به ته صفحه
-            bottom: 0,
-            left: 0,
             width: "100%",
             bgcolor: "#D1FADF",
             color: "#357a6e",
@@ -36,166 +25,104 @@ export default function Footer() {
             boxShadow: "0 -2px 6px rgba(0,0,0,0.06)",
             pt: 4,
             pb: 2,
-            zIndex: 1000,
-            fontFamily: "Vazirmatn, sans-serif !important",
             mt: { xs: 5, md: 1.5 },
-            direction: "rtl",
-            textAlign: "left",
+            direction: "ltr",
           }}
         >
-          <Grid
-            container
-            spacing={4}
+          {/* محتوای اصلی: راست و چپ دقیق */}
+          <Box
             sx={{
               px: { xs: 2, md: 8 },
-              justifyContent: "space-between", // ⬅️ ستون چپ و راست فاصله بگیرن
+              display: "flex",
+              justifyContent: "space-between", // ⬅️ راست / چپ
               alignItems: "flex-start",
+              flexWrap: "wrap",
+              gap: { xs: 4, md: 6 },
             }}
           >
-            {/* ستون‌های لینک‌ها (سمت چپ) */}
-            <Grid item xs={12} md={7}>
-              <Grid container spacing={4}>
-                <Grid item xs={12} sm={4}>
-                  <Typography sx={{ fontWeight: 600, mb: 1.5  }}>کاوش</Typography>
-                  {[
-                    "امکانات دستیار صوتی",
-                    "برنامه‌ریزی روزانه",
-                    "مدیریت کارها",
-                    "نمونه سناریوها",
-                  ].map((item) => (
-                    <MuiLink
-                      key={item}
-                      href="#"
-                      underline="none"
-                      sx={{
-                        display: "block",
-                        color: "#357a6e",
-                        mb: 0.8,
-                        fontSize: 14,
-                        opacity: 0.85,
-                        "&:hover": { opacity: 1 },
-                      }}
-                    >
-                      {item}
-                    </MuiLink>
-                  ))}
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
-                  <Typography sx={{ fontWeight: 600, mb: 1.5 }}>نوآوری</Typography>
-                  {[
-                    "هوش مصنوعی مکالمه‌ای",
-                    "هماهنگی با تقویم",
-                    "یادآوری‌های هوشمند",
-                    "اتصال به ابزارها",
-                  ].map((item) => (
-                    <MuiLink
-                      key={item}
-                      href="#"
-                      underline="none"
-                      sx={{
-                        display: "block",
-                        color: "#357a6e",
-                        mb: 0.8,
-                        fontSize: 14,
-                        opacity: 0.85,
-                        "&:hover": { opacity: 1 },
-                      }}
-                    >
-                      {item}
-                    </MuiLink>
-                  ))}
-                </Grid>
-
-                <Grid item xs={12} sm={4}>
-                  <Typography sx={{ fontWeight: 600, mb: 1.5 }}>درباره ما</Typography>
-                  {[
-                    "درباره هگزاکور",
-                    "حریم خصوصی و امنیت",
-                    "وبلاگ و اخبار",
-                    "مرکز پشتیبانی",
-                  ].map((item) => (
-                    <MuiLink
-                      key={item}
-                      href="#"
-                      underline="none"
-                      sx={{
-                        display: "block",
-                        color: "#357a6e",
-                        mb: 0.8,
-                        fontSize: 14,
-                        opacity: 0.85,
-                        "&:hover": { opacity: 1 },
-                      }}
-                    >
-                      {item}
-                    </MuiLink>
-                  ))}
-                </Grid>
-              </Grid>
-            </Grid>
-
-            {/* هگزاکور + متن (سمت راست) */}
-            <Grid
-              item
-              xs={12} 
-              md={4}
+            {/* سمت راست: هگزاکور + متن */}
+            <Box
               sx={{
-                textAlign: { xs: "center", md: "left" },  // ⬅️ در دسکتاپ کاملاً راست
+                width: { xs: "100%", md: 520 },
+                textAlign: "right",
               }}
             >
               <Typography
-                variant="h6"
-                sx={{ fontWeight: 700, mb: 2, color: "#357a6e" }}
+                sx={{
+                  fontWeight: 800,
+                  mb: 1.5,
+                  fontSize: { xs: 22, md: 26 },
+                  direction: "rtl",
+                  textAlign: "left",
+                }}
               >
                 هگزاکور
               </Typography>
 
               <Typography
-                variant="body2"
                 sx={{
-                  color: "#357a6e",
-                  opacity: 0.9,
-                  mb: 2,
-                  fontSize: 14,
-                  lineHeight: 1.8,
-                  maxWidth: 360,
-                  ml: { md: "auto" },          // ⬅️ بچسبه به راست
-                  mr: { md: 0 },
+                  fontSize: { xs: 15, md: 16 },
+                  lineHeight: 2,
+                  opacity: 0.95,
+                  textAlign: "left",
+                  direction: "rtl"
                 }}
               >
-                هگزاکور دستیار صوتی هوشمندی است که به شما کمک می‌کند
-                برنامه‌های روزانه، جلسات، کارها و عادت‌های خود را فقط با صحبت کردن
-                مدیریت کنید. برنامه‌ریزی شخصی تا کار تیمی، همه در یک فضای ساده و
+                هگزاکور دستیار صوتی هوشمندی است که به شما کمک می‌کند برنامه‌های
+                روزانه، جلسات، کارها و عادت‌های خود را فقط با صحبت کردن مدیریت
+                کنید. برنامه‌ریزی شخصی تا کار تیمی، همه در یک فضای ساده و
                 فارسی‌زبان
               </Typography>
+            </Box>
 
-              <Stack
-                direction="row"
-                spacing={2}
+            {/* سمت چپ: ارتباط با ما */}
+            <Box
+              sx={{
+                width: { xs: "100%", md: 260 },
+                textAlign: "right",
+              }}
+            >
+              <Typography
                 sx={{
-                  justifyContent: { xs: "center", md: "flex-end" },
+                  fontWeight: 800,
+                  mb: 1.5,
+                  fontSize: { xs: 18, md: 20 },
                 }}
               >
-                <Facebook fontSize="small" sx={{ color: "#357a6e" }} />
-                <Instagram fontSize="small" sx={{ color: "#357a6e" }} />
-                <Twitter fontSize="small" sx={{ color: "#357a6e" }} />
-              </Stack>
-            </Grid>
-          </Grid>
+                ارتباط با ما
+              </Typography>
+
+              {["درباره هگزاکور", "مرکز پشتیبانی"].map((item) => (
+                <MuiLink
+                  key={item}
+                  href="#"
+                  underline="none"
+                  sx={{
+                    display: "block",
+                    color: "#357a6e",
+                    fontSize: { xs: 15, md: 16 },
+                    mb: 1,
+                    opacity: 0.9,
+                    "&:hover": { opacity: 1 },
+                  }}
+                >
+                  {item}
+                </MuiLink>
+              ))}
+            </Box>
+          </Box>
 
           <Divider sx={{ my: 3, borderColor: "rgba(0,0,0,0.1)" }} />
 
           <Typography
             sx={{
               textAlign: "center",
-              fontSize: 14,
+              fontSize: { xs: 14, md: 15 },
               opacity: 0.85,
               pb: 1.5,
-              color: "#357a6e",
             }}
           >
-            © ۲۰۲۵ هگزاکور – پلتفرم برنامه‌ریزی با دستیار صوتی. تمامی حقوق محفوظ است 
+            © ۲۰۲۵ هگزاکور – پلتفرم برنامه‌ریزی با دستیار صوتی. تمامی حقوق محفوظ است
           </Typography>
         </Box>
       </ThemeProvider>
