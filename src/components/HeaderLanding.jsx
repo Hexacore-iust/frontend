@@ -3,14 +3,9 @@ import logo from "../assets/Logo.png";
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Typography,
   Button,
-  Drawer,
-  List,
   Box,
-  ListItemButton,
-  ListItemText,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -18,11 +13,7 @@ import {
   CssBaseline,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import {
-  Menu as MenuIcon,
-  Close as CloseIcon,
-  Add as AddIcon,
-} from "@mui/icons-material";
+import { Add as AddIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const appTheme = createTheme({
@@ -59,25 +50,10 @@ const appTheme = createTheme({
         },
       },
     },
-    MuiDrawer: {
-      styleOverrides: {
-        paper: {
-          fontFamily: "Vazirmatn, sans-serif",
-        },
-      },
-    },
-    MuiListItemText: {
-      styleOverrides: {
-        primary: {
-          fontFamily: "Vazirmatn, sans-serif",
-        },
-      },
-    },
   },
 });
 
 export default function HomeHeader() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -88,7 +64,6 @@ export default function HomeHeader() {
 
   return (
     <>
-      {/* فونت Vazirmatn */}
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap"
@@ -109,14 +84,8 @@ export default function HomeHeader() {
           }}
         >
           <Toolbar sx={{ minHeight: 56, px: { xs: 1, md: 3 } }}>
-            {/* دسکتاپ: ورود + حریم خصوصی */}
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                gap: 1.5,
-                alignItems: "center",
-              }}
-            >
+            {/* ✅ دکمه‌ها همیشه نمایش داده بشن (حتی موبایل) */}
+            <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
               <Button
                 variant="outlined"
                 endIcon={<AddIcon sx={{ fontSize: 18 }} />}
@@ -155,7 +124,6 @@ export default function HomeHeader() {
               </Button>
             </Box>
 
-            {/* فاصله‌دهنده */}
             <Box sx={{ flexGrow: 1 }} />
 
             {/* لوگو + اسم */}
@@ -171,60 +139,7 @@ export default function HomeHeader() {
                 sx={{ width: 55, height: 55, objectFit: "contain", borderRadius: "8px" }}
               />
             </Box>
-
-            {/* موبایل: همبرگری */}
-            <IconButton
-              sx={{ display: { xs: "block", md: "none" }, ml: "auto", color: "#0A3D2E" }}
-              onClick={() => setDrawerOpen(true)}
-            >
-              <MenuIcon />
-            </IconButton>
           </Toolbar>
-
-          {/* Drawer موبایل */}
-          <Drawer
-            anchor="right"
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-            PaperProps={{ sx: { direction: "rtl" } }}
-          >
-            <Box sx={{ width: 260, p: 2 }}>
-              <IconButton onClick={() => setDrawerOpen(false)} sx={{ mb: 1 }}>
-                <CloseIcon />
-              </IconButton>
-
-              <Button
-                variant="outlined"
-                endIcon={<AddIcon sx={{ fontSize: 18 }} />}
-                onClick={() => {
-                  setDrawerOpen(false);
-                  handleLogin();
-                }}
-                sx={{
-                  mt: 1,
-                  width: "100%",
-                  borderColor: "#0ACF83",
-                  color: "#0ACF83",
-                  borderRadius: "100px",
-                  "& .MuiButton-endIcon": { mr: 1, ml: 0 },
-                }}
-              >
-                ورود
-              </Button>
-
-              <List sx={{ mt: 2 }}>
-                <ListItemButton
-                  onClick={() => {
-                    setDrawerOpen(false);
-                    openPrivacy();
-                  }}
-                  sx={{ borderRadius: "10px" }}
-                >
-                  <ListItemText primary="حریم خصوصی" />
-                </ListItemButton>
-              </List>
-            </Box>
-          </Drawer>
         </AppBar>
 
         {/* Dialog قوانین و حریم خصوصی */}
@@ -249,47 +164,31 @@ export default function HomeHeader() {
               sx={{
                 fontSize: 15,
                 lineHeight: 2,
-                textAlign: "right",
-                direction: "rtl",
+                textAlign: "left",
+                direction: "ltr",
                 color: "#357a6e",
                 opacity: 0.95,
-                textAlign : "left",
-                direction : "ltr"
               }}
             >
               هوشیار یک دستیار هوش مصنوعی مکالمه‌ای است که به شما امکان می‌دهد از طریق گفتگو،
               برنامه‌ریزی روزانه، مدیریت کارها و پیگیری عادت‌های خود را انجام دهید.
-
               <br /><br />
-
               استفاده از این سرویس به معنی پذیرش این قوانین است. لطفاً پیش از استفاده، موارد زیر را مطالعه کنید.
-
               <br /><br />
-
               ما تلاش می‌کنیم مکالمات و اطلاعات شما محرمانه باقی بماند و بدون اجازه‌ی شما در اختیار اشخاص ثالث قرار نگیرد،
               مگر در مواردی که طبق قانون یا برای حفظ امنیت سرویس و جلوگیری از سوءاستفاده لازم باشد.
-
               <br /><br />
-
               لطفاً از وارد کردن اطلاعات بسیار حساس مانند رمزهای عبور، اطلاعات بانکی، کدهای یکبارمصرف و موارد مشابه در گفتگوها خودداری کنید.
               مسئولیت اطلاعات واردشده و نتایج استفاده از آن بر عهده کاربر است.
-
               <br /><br />
-
               پاسخ‌ها و پیشنهادهای ارائه‌شده توسط هوش مصنوعی جنبه راهنما دارد و ممکن است کامل یا بدون خطا نباشد.
               تصمیم‌گیری نهایی و استفاده از خروجی‌ها بر عهده شماست.
-
               <br /><br />
-
               برای بهبود کیفیت سرویس و رفع خطاها، ممکن است داده‌های فنی و عملکردی مانند نوع دستگاه، نسخه برنامه،
               و گزارش خطا به‌صورت حداقلی و در حد نیاز جمع‌آوری شود.
-
               <br /><br />
-
               هرگونه استفاده غیرمجاز، تلاش برای اختلال در سرویس، سوءاستفاده یا استفاده خلاف قوانین می‌تواند منجر به محدود شدن دسترسی یا توقف سرویس شود.
-
               <br /><br />
-
               این قوانین ممکن است در آینده به‌روزرسانی شوند. ادامه استفاده از سرویس پس از تغییرات، به معنی پذیرش نسخه جدید قوانین خواهد بود.
             </Typography>
           </DialogContent>
