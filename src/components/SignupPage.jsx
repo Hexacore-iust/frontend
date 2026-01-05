@@ -1,75 +1,151 @@
 import React, { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  TextField,
+  IconButton,
+  InputAdornment,
+  Alert,
+  CircularProgress,
+  Button,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "../assets/styles/SignupForm.css";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [rememberMe, setRememberMe] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  // field-level errors (like login)
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+  const clearTopMessages = () => {
+    setError("");
+    setSuccess("");
   };
 
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
+  const handleUsernameChange = (e) => {
+    const v = e.target.value;
+    setUsername(v);
+    clearTopMessages();
+    if (!v) return setUsernameError("نام کاربری الزامی است");
+    setUsernameError("");
+  };
+
+  const handleEmailChange = (e) => {
+    const v = e.target.value;
+    setEmail(v);
+    clearTopMessages();
+
+    if (!v) return setEmailError("ایمیل الزامی است");
+    if (!emailRegex.test(v)) return setEmailError("ایمیل باید معتبر باشد");
+    setEmailError("");
+  };
+
+  const handlePasswordChange = (e) => {
+    const v = e.target.value;
+    setPassword(v);
+    clearTopMessages();
+
+    if (!v) return setPasswordError("رمز عبور الزامی است");
+    if (!passwordRegex.test(v))
+      return setPasswordError(
+        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد"
+      );
+    setPasswordError("");
+
+    if (confirmPassword && v !== confirmPassword) {
+      setConfirmPasswordError("رمزها یکسان نیستند");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const v = e.target.value;
+    setConfirmPassword(v);
+    clearTopMessages();
+
+    if (!v) return setConfirmPasswordError("تایید رمز عبور الزامی است");
+    if (password && v !== password)
+      return setConfirmPasswordError("رمزها یکسان نیستند");
+    setConfirmPasswordError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form
-    if (!username || !email || !password || !confirmPassword) {
-      setError("All fields are required");
-      return;
+    clearTopMessages();
+    setUsernameError("");
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    let hasError = false;
+
+    if (!username) {
+      setUsernameError("نام کاربری الزامی است");
+      hasError = true;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address (e.g., user@example.com)");
-      return;
+    if (!email) {
+      setEmailError("ایمیل الزامی است");
+      hasError = true;
+    } else if (!emailRegex.test(email)) {
+      setEmailError("فرمت ایمیل نادرست است");
+      hasError = true;
     }
 
-    // Validate password complexity
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Password must be at least 8 characters long and include uppercase, lowercase, and numbers"
+    if (!password) {
+      setPasswordError("رمز عبور الزامی است");
+      hasError = true;
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد"
       );
-      return;
+      hasError = true;
     }
 
-    // Validate password match
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+    if (!confirmPassword) {
+      setConfirmPasswordError("تایید رمز عبور الزامی است");
+      hasError = true;
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError("رمزها یکسان نیستند");
+      hasError = true;
     }
+
+    if (hasError) return;
 
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const response = await fetch(
         "https://hexacore-iust-backend.liara.run/api/auth/signup/",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: username.trim(),
             email: email.trim(),
             password: password,
-            password2: password,
+            password2: confirmPassword,
           }),
         }
       );
@@ -77,31 +153,37 @@ const SignupPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Signup successful! Redirecting to login...");
-        // Reset form
+        setSuccess("ثبت نام با موفقیت انجام شد! در حال انتقال به صفحه ورود...");
         setUsername("");
         setEmail("");
         setPassword("");
         setConfirmPassword("");
         setRememberMe(false);
 
-        // Optionally redirect after success
         setTimeout(() => {
           window.location.href = "/login";
         }, 2000);
       } else {
-        // Handle error response from Django
-        if (data.message) {
-          setError(data.message);
-        } else if (data.username || data.email || data.password) {
-          // Django validation errors (e.g., "username already exists")
-          setError(Object.values(data).flat().join(", "));
-        } else {
-          setError("Signup failed. Please try again.");
+        // backend errors
+        const backendGeneral = data.message || data.detail || "";
+        const backendUsername =
+          (Array.isArray(data.username) && data.username[0]) || "";
+        const backendEmail = (Array.isArray(data.email) && data.email[0]) || "";
+        const backendPassword =
+          (Array.isArray(data.password) && data.password[0]) || "";
+
+        if (backendUsername) setUsernameError(backendUsername);
+        if (backendEmail) setEmailError(backendEmail);
+        if (backendPassword) setPasswordError(backendPassword);
+
+        if (!backendUsername && !backendEmail && !backendPassword) {
+          setError(backendGeneral || "ثبت نام ناموفق بود. دوباره تلاش کنید.");
+        } else if (backendGeneral) {
+          setError(backendGeneral);
         }
       }
-    } catch (error) {
-      setError("Network error. Please check your connection and try again.");
+    } catch {
+      setError("خطای شبکه. لطفاً اتصال اینترنت را بررسی کنید.");
     } finally {
       setLoading(false);
     }
@@ -113,143 +195,128 @@ const SignupPage = () => {
         <div className="signup-content">
           <div className="signup-title">
             <h1>ثبت نام</h1>
-            <div className="signup-underline"></div>
+            <div className="signup-underline" />
           </div>
 
           {error && (
-            <div
-              className="error-message"
-              style={{
-                color: "#ef4444",
-                backgroundColor: "#fee2e2",
-                padding: "12px",
-                borderRadius: "6px",
-                marginBottom: "16px",
-                textAlign: "center",
-              }}
-            >
+            <Alert severity="error" sx={{ width: "fit-content", mb: 2 }}>
               {error}
-            </div>
+            </Alert>
           )}
-
           {success && (
-            <div
-              className="success-message"
-              style={{
-                color: "#22c55e",
-                backgroundColor: "#dcfce7",
-                padding: "12px",
-                borderRadius: "6px",
-                marginBottom: "16px",
-                textAlign: "center",
-              }}
-            >
+            <Alert severity="success" sx={{ width: "fit-content", mb: 2 }}>
               {success}
-            </div>
+            </Alert>
           )}
 
-          <form onSubmit={handleSubmit} className="signup-form">
-            <div className="signup-input-group">
-              <input
-                type="text"
-                placeholder="نام کاربری"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="signup-input"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="signup-form" noValidate>
+            <TextField
+              required
+              label="نام کاربری"
+              value={username}
+              onChange={handleUsernameChange}
+              error={Boolean(usernameError)}
+              helperText={usernameError}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
 
-            <div className="signup-input-group">
-              <input
-                type="email"
-                placeholder="ایمیل"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="signup-input"
-                required
-              />
-            </div>
+            <TextField
+              required
+              label="ایمیل"
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              error={Boolean(emailError)}
+              helperText={emailError}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+            />
 
-            <div
-              className="signup-input-group"
-              style={{ position: "relative" }}
+            <TextField
+              required
+              label="رمز عبور"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={handlePasswordChange}
+              error={Boolean(passwordError)}
+              helperText={passwordError}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((s) => !s)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <TextField
+              required
+              label="تایید رمز عبور"
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              error={Boolean(confirmPasswordError)}
+              helperText={confirmPasswordError}
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{ input: { color: "#777" } }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword((s) => !s)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+              }
+              label="مرا به خاطر بسپار"
+              sx={{ mt: 1 }}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 2, backgroundColor: "#00c48c" }}
             >
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="رمز عبور"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="signup-input"
-                required
-                style={{ paddingRight: "40px" }}
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "56%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#6b7280",
-                }}
-              >
-                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-              </button>
-            </div>
-
-            <div
-              className="signup-input-group"
-              style={{ position: "relative" }}
-            >
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="تایید رمز عبور"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="signup-input"
-                required
-                style={{ paddingRight: "40px" }}
-              />
-              <button
-                type="button"
-                onClick={toggleConfirmPasswordVisibility}
-                style={{
-                  position: "absolute",
-                  right: "12px",
-                  top: "56%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#6b7280",
-                }}
-              >
-                {showConfirmPassword ? (
-                  <FaEyeSlash size={20} />
-                ) : (
-                  <FaEye size={20} />
-                )}
-              </button>
-            </div>
-
-            <div className="signup-remember">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <label htmlFor="rememberMe">مرا به خاطر بسپار</label>
-            </div>
-
-            <button type="submit" className="signup-button" disabled={loading}>
-              {loading ? "در حال ثبت نام..." : "ثبت نام"}
-            </button>
+              <span style={{ fontSize: "1.1rem", fontWeight: 600 }}>
+                {"ثبت نام"}
+              </span>
+              {loading && (
+                <CircularProgress
+                  size={18}
+                  color="inherit"
+                  sx={{ mr: 1, marginLeft: "12px" }}
+                />
+              )}
+            </Button>
 
             <div className="signup-login-link">
               <a href="/login" style={{ textDecoration: "underline" }}>
