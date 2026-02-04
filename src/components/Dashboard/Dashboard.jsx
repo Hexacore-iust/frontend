@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { apiInstance } from "../../api/axios";
 import "./Dashboard.styles.scss";
+import CircularProgress from "@mui/material/CircularProgress";
 import CustomAccordion from "../Accordion/CustomAccordion";
 import DashboardFilterMeeting from "./DashBoardFilter/DashboardFilterMeeting";
 import DashboardFilterTaskOverdue from "./DashBoardFilter/DashboardFilterTaskOverdue";
@@ -11,12 +12,25 @@ const Dashboard = () => {
   const [schedule, setSchedule] = useState([]);
   const [filter, setFilter] = useState("");
   const [dateFilteredSchedule, setDateFilteredSchedule] = useState([]);
+  const [loadingStat1, setLoadingStat1] = useState(false);
+  const [loadingStat2, setLoadingStat2] = useState(false);
+  const [loadingStat3, setLoadingStat3] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [statistics, setStatistics] = useState({
     overdue_tasks: 0,
     upcoming_tasks: 0,
     upcoming_meetings: 0,
   });
+
+  const convertToPersian = (number) => {
+    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+    return number
+      .toString()
+      .split("")
+      .map((digit) => persianDigits[parseInt(digit, 10)] || digit)
+      .join("");
+  };
 
   const getStatistic = () => {
     apiInstance
@@ -36,6 +50,7 @@ const Dashboard = () => {
   };
 
   const getTodaySchedule = () => {
+    setLoading(true);
     apiInstance
       .get("/api/homepage/schedule/today")
       .then((response) => {
@@ -43,7 +58,8 @@ const Dashboard = () => {
       })
       .catch((err) => {
         console.error(err);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const toHM = (value) => {
@@ -61,6 +77,8 @@ const Dashboard = () => {
   };
   useEffect(() => {
     getStatistic();
+  }, []);
+  useEffect(() => {
     getTodaySchedule();
   }, []);
 
@@ -73,23 +91,29 @@ const Dashboard = () => {
       <div className="task-blocks">
         <DashboardFilterMeeting
           title={"قرار های پیش رو"}
-          upcomingMeetings={statistics.upcoming_meetings}
+          upcomingMeetings={convertToPersian(statistics.upcoming_meetings)}
           setDateFilteredSchedule={setDateFilteredSchedule}
           setFilter={setFilter}
+          loadingStat={loadingStat1}
+          setLoadingStat={setLoadingStat1}
         />
 
         <DashboardFilterTasks
           title={"کار های پیش رو"}
-          upcomingTasks={statistics.upcoming_tasks}
+          upcomingTasks={convertToPersian(statistics.upcoming_tasks)}
           setDateFilteredSchedule={setDateFilteredSchedule}
           setFilter={setFilter}
+          loadingStat={loadingStat2}
+          setLoadingStat={setLoadingStat2}
         />
 
         <DashboardFilterTaskOverdue
           title={"کار های باقی مانده"}
-          upcomingTasksOverdue={statistics.overdue_tasks}
+          upcomingTasksOverdue={convertToPersian(statistics.overdue_tasks)}
           setDateFilteredSchedule={setDateFilteredSchedule}
           setFilter={setFilter}
+          loadingStat={loadingStat3}
+          setLoadingStat={setLoadingStat3}
         />
       </div>
 
@@ -103,8 +127,22 @@ const Dashboard = () => {
               gap: "8px",
             }}
           >
-            {schedule.length === 0 ? (
-              <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد</p>
+            {loading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  padding: 12,
+                }}
+              >
+                <CircularProgress
+                  size={24}
+                  color="inherit"
+                  style={{ marginRight: 8 }}
+                />
+              </div>
+            ) : schedule.length === 0 ? (
+              <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد.</p>
             ) : (
               schedule.map((item) => {
                 return (
@@ -147,8 +185,14 @@ const Dashboard = () => {
                 gap: "8px",
               }}
             >
-              {dateFilteredSchedule.length === 0 ? (
-                <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد</p>
+              {loadingStat1 || loadingStat2 || loadingStat3 ? (
+                <CircularProgress
+                  size={24}
+                  color="inherit"
+                  style={{ marginRight: 8 }}
+                />
+              ) : dateFilteredSchedule.length === 0 ? (
+                <p style={{ color: "#777" }}>اطلاعاتی برای نمایش وجود ندارد.</p>
               ) : (
                 dateFilteredSchedule.map((item) => {
                   return (

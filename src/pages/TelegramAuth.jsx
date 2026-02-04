@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import { Alert, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { telegramLoginRequest } from "../api/auth";
 import { tokenStorage } from "../api/axios";
+import LoadingScreen from "../components/MiniApp/LoadingScreen";
 
 const TelegramAuth = () => {
   const [status, setStatus] = useState("loading"); // loading | error | no-telegram
+  const [errorText, setErrorText] = useState("");
   const navigate = useNavigate();
-  const [initDataText, setInitDataText] = useState("");
-  const [responseText, setResponseText] = useState("");
 
   useEffect(() => {
     const existingAccess = tokenStorage.getAccess();
@@ -18,7 +19,6 @@ const TelegramAuth = () => {
 
     const tg = window.Telegram?.WebApp;
     const initData = tg?.initData;
-    setInitDataText(initData);
 
     if (!initData) {
       setStatus("no-telegram");
@@ -29,53 +29,46 @@ const TelegramAuth = () => {
 
     telegramLoginRequest(initData)
       .then((res) => {
-        setResponseText(res);
         const data = res.data;
-
         const access = data?.tokens?.access || data?.access;
         const refresh = data?.tokens?.refresh || data?.refresh;
 
         if (!access || !refresh) {
-          throw new Error("Tokens not found in response");
+          throw new Error("Tokens not found");
         }
 
         tokenStorage.setTokens(access, refresh);
-
         navigate("/homepage", { replace: true });
       })
       .catch((err) => {
-        console.error("Telegram login error:", err);
-        setResponseText(err.error);
+        console.error(err);
+        setErrorText("ورود با تلگرام ناموفق بود!");
         setStatus("error");
       });
   }, [navigate]);
 
-  if (status === "no-telegram") {
+  if (status === "loading") {
     return (
-      <div style={{ padding: 16 }}>
-        این صفحه باید داخل تلگرام باز شود. "initData" {initDataText}
-      </div>
+      <>
+        <LoadingScreen text="در حال ورود از طریق تلگرام…" />;
+        <CircularProgress
+          size={18}
+          color="inherit"
+          sx={{ mr: 1, marginLeft: "12px" }}
+        />
+      </>
     );
+  }
+
+  if (status === "no-telegram") {
+    return <LoadingScreen text="این صفحه باید در تلگرام باز شود!❌" />;
   }
 
   if (status === "error") {
-    return (
-      <div style={{ padding: 16 }}>
-        خطا در ورود با تلگرام. "initData" {initDataText}
-        <div>
-          response
-          {responseText}
-        </div>
-      </div>
-    );
+    return <LoadingScreen text={`❌ ${errorText}`} />;
   }
 
-  return (
-    <div style={{ padding: 16 }}>
-      "initData" {initDataText}
-      در حال ورود از طریق تلگرام...
-    </div>
-  );
+  return null;
 };
 
 export default TelegramAuth;

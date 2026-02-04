@@ -14,9 +14,10 @@ $box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
 .task-blocks {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 24px;
   margin-bottom: 20px;
+  margin-top: 6px;
 
   &__statistic-box {
     width: 100%;

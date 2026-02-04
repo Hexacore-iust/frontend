@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
 import { baseUrl } from "../../config";
 import { apiInstance } from "../../api/axios.js";
 
@@ -9,16 +11,19 @@ const FileUpload = () => {
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [showFileBox, setShowFileBox] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    fetchUploadedFiles();
-  }, []);
+  const buildFileUrl = (path) => {
+    if (!path) return "";
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    console.log(`${baseUrl}${cleanPath}`);
+    return `${baseUrl}${cleanPath}`;
+  };
 
   const fetchUploadedFiles = () => {
-    apiInstance.get("/api/auth/files/").then((response) => {
-      if (response) {
-        setFiles(response.data.files || []);
-      }
+    return apiInstance.get("/api/auth/files/").then((response) => {
+      setFiles(response?.data?.files || []);
     });
   };
 
@@ -58,8 +63,8 @@ const FileUpload = () => {
       formData.append("files", file.fileData);
     });
 
-    apiInstance.post("/api/auth/files/").then((response) => {
-      console.log("Files uploaded successfully:", response.data);
+    return apiInstance.post("/api/auth/files/", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
   };
 
@@ -74,21 +79,37 @@ const FileUpload = () => {
 
   const handleFileSubmit = (e) => {
     e.preventDefault();
-    if (files.length === 0) {
+    if (selectedFiles.length === 0) {
       console.error("No files selected for upload");
       return;
     }
 
-    try {
-      const uploaded = uploadFiles(selectedFiles);
+    setLoading(true);
+    setSuccess(false);
 
-      const allFiles = [...uploaded.files, ...files];
-
-      setFiles(allFiles);
-    } catch (error) {
-      console.error("Error uploading files:", error);
-    }
+    uploadFiles(selectedFiles)
+      .then(() => {
+        setSuccess(true);
+        setSelectedFiles([]);
+        fetchUploadedFiles();
+      })
+      .catch((error) => {
+        console.error("Error uploading files:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
+
+  useEffect(() => {
+    fetchUploadedFiles();
+  }, []);
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   return (
     <div className="file-upload">
@@ -122,13 +143,12 @@ const FileUpload = () => {
             <div>
               {files.length > 0 && (
                 <ul>
-                  {files.map((file, index) => (
-                    <li key={index}>
+                  {files.map((file) => (
+                    <li key={file.id}>
                       {/* Display file name */}
-
-                      {file.file && (
+                      {
                         <img
-                          src={`${baseUrl}${file.file}`}
+                          src={buildFileUrl(file.file)}
                           // alt={file.original_name}
                           style={{
                             width: "30px",
@@ -138,7 +158,7 @@ const FileUpload = () => {
                             marginRight: "10px",
                           }}
                         />
-                      )}
+                      }
                       {file.original_name}
 
                       <Button
@@ -201,9 +221,21 @@ const FileUpload = () => {
                   onClick={handleFileSubmit}
                 >
                   ثبت فایل
+                  {loading && (
+                    <CircularProgress
+                      size={18}
+                      color="inherit"
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
                 </Button>
               </div>
             </label>
+            {success && (
+              <Alert severity="success" sx={{ width: "fit-content", mt: 2 }}>
+                فایل‌ها با موفقیت آپلود شدند.
+              </Alert>
+            )}
           </div>
         </>
       )}

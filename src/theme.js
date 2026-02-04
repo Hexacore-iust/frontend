@@ -5,9 +5,20 @@ import { faIR as pickersFaIR } from "@mui/x-date-pickers/locales";
 const theme = createTheme(
   {
     direction: "rtl",
+    typography: {
+      fontFamily: [
+        "Vazirmatn",
+        "system-ui",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Segoe UI",
+        "Roboto",
+        "sans-serif",
+      ].join(","),
+    },
   },
   coreFaIR,
-  pickersFaIR
+  pickersFaIR,
 );
 
 export default theme;

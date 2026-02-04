@@ -52,13 +52,13 @@
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  /* gap: 16px; */
 }
 
 .signup-input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  /* gap: 8px; */
 }
 
 .signup-input {
@@ -133,7 +133,7 @@
     max-width: 100%;
     margin: 12px;
   }
-  
+
   .signup-content {
     width: 90%;
     justify-self: center;

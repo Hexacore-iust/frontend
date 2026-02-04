@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import DatePicker from "../../DatePicker/DatePicker";
 import Button from "@mui/material/Button";
 import { apiInstance } from "../../../api/axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const DashboardFilterMeeting = (props) => {
-  const { title, upcomingMeetings, setDateFilteredSchedule, setFilter } = props;
+  const {
+    title,
+    upcomingMeetings,
+    setDateFilteredSchedule,
+    setFilter,
+    loadingStat,
+    setLoadingStat,
+  } = props;
 
   const [date, setDate] = useState({
     start: new Date(),
@@ -32,11 +40,12 @@ const DashboardFilterMeeting = (props) => {
 
     // Use UTC year/month/day and set time to 00:00:00 UTC
     return new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0)
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0),
     ).toISOString();
   };
 
   const getUpcomingMeetings = (start, end) => {
+    setLoadingStat(true);
     apiInstance
       .post("/api/homepage/statistics/range/upcoming-meetings/", {
         start,
@@ -45,13 +54,14 @@ const DashboardFilterMeeting = (props) => {
       .then((res) => {
         setDateFilteredSchedule(res.data.items);
         setFilter("قرار های ملاقات پیش رو:");
-      });
+      })
+      .finally(() => setLoadingStat(false));
   };
 
   const handleSubmitDate = () => {
     getUpcomingMeetings(
       toUtcMidnightISOString(date.start),
-      toUtcMidnightISOString(date.end)
+      toUtcMidnightISOString(date.end),
     );
   };
 
@@ -60,7 +70,9 @@ const DashboardFilterMeeting = (props) => {
       <div className="task-blocks__statistic-box">
         <div className="task-blocks__statistic-box__text">
           <h3>{title}</h3>
-          <p style={{ color: "#FF8D28" }}>{upcomingMeetings}</p>
+          <p style={{ color: "#FF8D28", fontSize: "22px" }}>
+            {upcomingMeetings}
+          </p>
         </div>
         <div className="task-blocks__statistic-box__date">
           <DatePicker
@@ -83,7 +95,14 @@ const DashboardFilterMeeting = (props) => {
             backgroundColor: "#00c48c",
           }}
         >
-          مشاهده بیشتر{" "}
+          مشاهده بیشتر
+          {loadingStat && (
+            <CircularProgress
+              size={18}
+              color="inherit"
+              style={{ marginRight: 8 }}
+            />
+          )}
         </Button>
       </div>
     </div>
