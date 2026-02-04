@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import MicNoneIcon from "@mui/icons-material/MicNone";
 import StopIcon from "@mui/icons-material/Stop";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
@@ -176,6 +177,18 @@ const ChatPage = () => {
     setChats((prev) => [newChat, ...prev]);
     setActiveChatId(newChat.id);
     setInput("");
+  };
+
+  const deleteChat = (chatId) => {
+    setChats((prev) => {
+      const next = prev.filter((c) => c.id !== chatId);
+
+      // اگر چت فعال حذف شد، برو روی اولین چت باقی‌مانده
+      if (activeChatId === chatId) {
+        setActiveChatId(next[0]?.id || null);
+      }
+      return next;
+    });
   };
 
   const updateChatMessages = (chatId, updater) => {
@@ -549,7 +562,17 @@ const ChatPage = () => {
   // Layout
   // =====================
   return (
-    <Box sx={{ width: "100%", height: 650, display: "flex", gap: 2, alignSelf: "stretch" }}>
+    <Box
+      sx={{
+        width: "100%",
+        height: 650,
+        display: "flex",
+        gap: 2,
+        alignSelf: "stretch",
+        fontFamily: "Vazirmatn, sans-serif",
+        direction: "rtl",
+      }}
+    >
       {/* Sidebar chats */}
       <Paper
         elevation={3}
@@ -560,10 +583,13 @@ const ChatPage = () => {
           bgcolor: "#FFFFFF",
           display: "flex",
           flexDirection: "column",
+          fontFamily: "Vazirmatn, sans-serif",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-          <Typography sx={{ fontWeight: 900, fontSize: 14 }}>گفتگوها</Typography>
+          <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
+            گفتگوها
+          </Typography>
           <Box sx={{ flex: 1 }} />
           <Tooltip title="گفتگوی جدید">
             <IconButton onClick={createNewChat} size="small" sx={{ bgcolor: "rgba(0,0,0,0.04)" }}>
@@ -591,18 +617,33 @@ const ChatPage = () => {
                 <ListItemIcon sx={{ minWidth: 34 }}>
                   <ChatBubbleOutlineIcon fontSize="small" />
                 </ListItemIcon>
+
                 <ListItemText
+                  sx={{ flex: 1 }}
                   primary={
-                    <Typography sx={{ fontSize: 13, fontWeight: 800 }}>
+                    <Typography sx={{ fontSize: 13, fontWeight: 800, fontFamily: "Vazirmatn, sans-serif" }}>
                       {c.title || "بدون عنوان"}
                     </Typography>
                   }
                   secondary={
-                    <Typography sx={{ fontSize: 12, opacity: 0.75 }}>
+                    <Typography sx={{ fontSize: 12, opacity: 0.75, fontFamily: "Vazirmatn, sans-serif" }}>
                       {(c.messages || []).length} پیام
                     </Typography>
                   }
                 />
+
+                <Tooltip title="حذف گفتگو">
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteChat(c.id);
+                    }}
+                    sx={{ ml: 0.5 }}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </ListItemButton>
             ))}
           </List>
@@ -625,11 +666,11 @@ const ChatPage = () => {
       >
         {/* Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
+          <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
             {activeChat?.title || "گفتگو"}
           </Typography>
           <Box sx={{ flex: 1 }} />
-          <Typography sx={{ fontSize: 12, opacity: 0.65 }}>
+          <Typography sx={{ fontSize: 12, opacity: 0.65, fontFamily: "Vazirmatn, sans-serif" }}>
             {(activeChat?.messages || []).length} پیام
           </Typography>
         </Box>
@@ -649,7 +690,7 @@ const ChatPage = () => {
             >
               <Bubble from={m.from}>
                 {m.type === "text" && (
-                  <Typography sx={{ fontSize: "0.98rem", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
+                  <Typography sx={{ fontSize: "0.98rem", lineHeight: 1.8, whiteSpace: "pre-wrap" ,fontFamily: "Vazirmatn, sans-serif",}}>
                     {m.text}
                   </Typography>
                 )}
