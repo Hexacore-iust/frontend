@@ -44,6 +44,15 @@ const Profile = () => {
     job: "",
   });
 
+  const convertToPersian = (number) => {
+    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+    return number
+      .toString()
+      .split("")
+      .map((digit) => persianDigits[parseInt(digit, 10)] || digit)
+      .join("");
+  };
+
   const handleChangeDate = (value) => {
     setDate((prev) => ({
       ...prev,
@@ -96,7 +105,7 @@ const Profile = () => {
 
     const d = value instanceof Date ? value : new Date(value);
     const utcDate = new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
     );
     const year = utcDate.getUTCFullYear();
     const month = (utcDate.getUTCMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
@@ -126,7 +135,7 @@ const Profile = () => {
     appendIfNotEmpty("job_title", formData.job);
     appendIfNotEmpty(
       "date_of_birth",
-      toUtcMidnightISOString(formData.birthDate)
+      toUtcMidnightISOString(formData.birthDate),
     );
 
     return apiInstance.patch("/api/auth/profile/update/", formDataToSend, {
@@ -291,7 +300,7 @@ const Profile = () => {
             <TextField
               name="phoneNumber"
               label="تلفن همراه"
-              value={formData.phoneNumber}
+              value={convertToPersian(formData.phoneNumber)}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"

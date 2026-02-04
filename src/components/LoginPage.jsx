@@ -28,6 +28,16 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
+  const convertToPersian = (str) => {
+    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+    return str
+      .split("")
+      .map((char) =>
+        /[0-9]/.test(char) ? persianDigits[parseInt(char, 10)] : char,
+      )
+      .join("");
+  };
+
   const togglePasswordVisibility = () => setShowPassword((s) => !s);
 
   const handleEmailChange = (e) => {
@@ -97,7 +107,7 @@ const LoginPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: email.trim(), password }),
-        }
+        },
       );
 
       let data = {};
@@ -153,7 +163,7 @@ const LoginPage = () => {
     }
 
     window.location.href = `/otp-verification?email=${encodeURIComponent(
-      email
+      email,
     )}`;
   };
 
@@ -182,7 +192,7 @@ const LoginPage = () => {
               required
               label="ایمیل"
               type="email"
-              value={email}
+              value={convertToPersian(email)}
               onChange={handleEmailChange}
               error={Boolean(emailError)}
               helperText={emailError}
@@ -196,7 +206,7 @@ const LoginPage = () => {
               required
               label="رمز عبور"
               type={showPassword ? "text" : "password"}
-              value={password}
+              value={convertToPersian(password)}
               onChange={handlePasswordChange}
               error={Boolean(passwordError)}
               helperText={passwordError}

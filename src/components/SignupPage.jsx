@@ -36,6 +36,15 @@ const SignupPage = () => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
+  const convertToPersian = (number) => {
+    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+    return number
+      .toString()
+      .split("")
+      .map((digit) => persianDigits[parseInt(digit, 10)] || digit)
+      .join("");
+  };
+
   const clearTopMessages = () => {
     setError("");
     setSuccess("");
@@ -67,7 +76,7 @@ const SignupPage = () => {
     if (!v) return setPasswordError("رمز عبور الزامی است");
     if (!passwordRegex.test(v))
       return setPasswordError(
-        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد"
+        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد",
       );
     setPasswordError("");
 
@@ -118,7 +127,7 @@ const SignupPage = () => {
       hasError = true;
     } else if (!passwordRegex.test(password)) {
       setPasswordError(
-        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد"
+        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد",
       );
       hasError = true;
     }
@@ -147,7 +156,7 @@ const SignupPage = () => {
             password: password,
             password2: confirmPassword,
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -213,7 +222,7 @@ const SignupPage = () => {
             <TextField
               required
               label="نام کاربری"
-              value={username}
+              value={convertToPersian(username)}
               onChange={handleUsernameChange}
               error={Boolean(usernameError)}
               helperText={usernameError}
@@ -227,7 +236,7 @@ const SignupPage = () => {
               required
               label="ایمیل"
               type="email"
-              value={email}
+              value={convertToPersian(email)}
               onChange={handleEmailChange}
               error={Boolean(emailError)}
               helperText={emailError}
@@ -241,7 +250,7 @@ const SignupPage = () => {
               required
               label="رمز عبور"
               type={showPassword ? "text" : "password"}
-              value={password}
+              value={convertToPersian(password)}
               onChange={handlePasswordChange}
               error={Boolean(passwordError)}
               helperText={passwordError}
@@ -267,7 +276,7 @@ const SignupPage = () => {
               required
               label="تایید رمز عبور"
               type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
+              value={convertToPersian(confirmPassword)}
               onChange={handleConfirmPasswordChange}
               error={Boolean(confirmPasswordError)}
               helperText={confirmPasswordError}

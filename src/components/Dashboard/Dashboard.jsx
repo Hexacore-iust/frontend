@@ -23,6 +23,15 @@ const Dashboard = () => {
     upcoming_meetings: 0,
   });
 
+  const convertToPersian = (number) => {
+    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+    return number
+      .toString()
+      .split("")
+      .map((digit) => persianDigits[parseInt(digit, 10)] || digit)
+      .join("");
+  };
+
   const getStatistic = () => {
     apiInstance
       .get("/api/homepage/statistics")
@@ -82,7 +91,7 @@ const Dashboard = () => {
       <div className="task-blocks">
         <DashboardFilterMeeting
           title={"قرار های پیش رو"}
-          upcomingMeetings={statistics.upcoming_meetings}
+          upcomingMeetings={convertToPersian(statistics.upcoming_meetings)}
           setDateFilteredSchedule={setDateFilteredSchedule}
           setFilter={setFilter}
           loadingStat={loadingStat1}
@@ -91,7 +100,7 @@ const Dashboard = () => {
 
         <DashboardFilterTasks
           title={"کار های پیش رو"}
-          upcomingTasks={statistics.upcoming_tasks}
+          upcomingTasks={convertToPersian(statistics.upcoming_tasks)}
           setDateFilteredSchedule={setDateFilteredSchedule}
           setFilter={setFilter}
           loadingStat={loadingStat2}
@@ -100,7 +109,7 @@ const Dashboard = () => {
 
         <DashboardFilterTaskOverdue
           title={"کار های باقی مانده"}
-          upcomingTasksOverdue={statistics.overdue_tasks}
+          upcomingTasksOverdue={convertToPersian(statistics.overdue_tasks)}
           setDateFilteredSchedule={setDateFilteredSchedule}
           setFilter={setFilter}
           loadingStat={loadingStat3}

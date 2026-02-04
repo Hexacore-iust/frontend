@@ -70,7 +70,7 @@ const DashboardFilterTaskOverdue = (props) => {
       <div className="task-blocks__statistic-box">
         <div className="task-blocks__statistic-box__text">
           <h3>{title}</h3>
-          <p style={{ color: "#FF8D28" }}>{upcomingTasksOverdue}</p>
+          <p style={{ color: "#FF8D28", fontSize: "22px" }}>{upcomingTasksOverdue}</p>
         </div>
         <div className="task-blocks__statistic-box__date">
           <DatePicker
