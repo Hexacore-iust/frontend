@@ -13,9 +13,6 @@
     "Helvetica Neue",
     sans-serif;
   margin-top: 32px;
-  direction: rtl;
-  font-feature-settings: "lnum";
-  digit: "fa";
 }
 
 /* Responsive adjustments */
