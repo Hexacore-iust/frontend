@@ -18,7 +18,7 @@ const theme = createTheme(
     },
   },
   coreFaIR,
-  pickersFaIR
+  pickersFaIR,
 );
 
 export default theme;
