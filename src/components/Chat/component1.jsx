@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Paper, IconButton, TextField } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import MicNoneIcon from "@mui/icons-material/MicNone";
+import { IoSend } from "react-icons/io5";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([
@@ -50,7 +51,6 @@ const ChatPage = () => {
           height: "600px"
         }}
       >
-        {/* لیست پیام‌ها */}
         <Box
           sx={{
             flex: 1,
@@ -70,13 +70,14 @@ const ChatPage = () => {
             >
               <Box
                 sx={{
+                  fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                  fontSize: "0.98rem",
                   maxWidth: "90%",
                   borderRadius: 3,
                   px: 3,
                   py: 1,
                   bgcolor: m.from === "user" ? "#F8F8F8" : "#00C2A8",
                   color: m.from === "user" ? "text.primary" : "#ffffff",
-                  fontSize: "1.05rem",
                   lineHeight: "1.7",
                 }}
               >
@@ -86,20 +87,19 @@ const ChatPage = () => {
           ))}
         </Box>
 
-        {/* اینپوت پایین چت */}
-        <Box component="form" onSubmit={handleSend}>
+        <Box component="form" onSubmit={handleSend} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Paper
             elevation={0}
             sx={{
               borderRadius: 999,
               border: "1px solid #D0D0D0",
               px: 2,
-              py: 0.5,
+              py: 0.75,
+              flex: 1,
               display: "flex",
               alignItems: "center",
             }}
           >
-            {/* آیکن‌ها */}
             <IconButton size="small" sx={{ ml: 0.5 }}>
               <AttachFileIcon fontSize="small" />
             </IconButton>
@@ -107,7 +107,6 @@ const ChatPage = () => {
               <MicNoneIcon fontSize="small" />
             </IconButton>
 
-            {/* فیلد متن */}
             <TextField
               variant="standard"
               fullWidth
@@ -116,14 +115,32 @@ const ChatPage = () => {
               InputProps={{
                 disableUnderline: true,
                 sx: {
-                  fontFamily: "Vazirmatn, sans-serif",
-                  fontSize: ".9rem",
+                  fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+                  fontSize: "0.95rem",
                   textAlign: "right",
                 },
               }}
               placeholder="سوال بپرس..."
             />
           </Paper>
+
+          <IconButton
+            type="submit"
+            size="medium"
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              bgcolor: input.trim() ? "#00C2A8" : "#E0E0E0",
+              color: input.trim() ? "#fff" : "#999",
+              '&:hover': {
+                bgcolor: input.trim() ? "#00a896" : "#D5D5D5",
+              },
+              flexShrink: 0,
+            }}
+          >
+            <IoSend style={{ fontSize: "1.4rem" }} />
+          </IconButton>
         </Box>
       </Paper>
     </Box>
