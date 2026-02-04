@@ -666,13 +666,12 @@ const ChatPage = () => {
       >
         {/* Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+          <Box sx={{ flex: 1 }} />
           <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
             {activeChat?.title || "گفتگو"}
           </Typography>
-          <Box sx={{ flex: 1 }} />
-          <Typography sx={{ fontSize: 12, opacity: 0.65, fontFamily: "Vazirmatn, sans-serif" }}>
-            {(activeChat?.messages || []).length} پیام
-          </Typography>
+          
+          
         </Box>
 
         <Divider sx={{ mb: 2 }} />
