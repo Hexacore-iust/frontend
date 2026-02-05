@@ -23,17 +23,125 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { IoSend, IoPlay, IoPause } from "react-icons/io5";
 
+const API_BASE = "https://jebel-agent.liara.run";
+
 // =====================
-// MOCK CHAT API
+// API helpers
 // =====================
-const mockChatApi = (payloadType = "text") =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      if (payloadType === "audio") resolve("🎧 پیام صوتی دریافت شد.");
-      else if (payloadType === "file") resolve("📎 فایل شما دریافت شد.");
-      else resolve("🤖 پیام شما دریافت شد.");
-    }, 600);
-  });
+const getAccessToken = () =>
+  localStorage.getItem("accessToken") ||
+  localStorage.getItem("access_token") ||
+  localStorage.getItem("access") ||
+  localStorage.getItem("token") ||
+  "";
+
+console.log("LS_KEYS=>", Object.keys(localStorage));
+console.log("LS_user=>", localStorage.getItem("user"));
+console.log("LS_auth=>", localStorage.getItem("auth"));
+console.log("TOKEN=>", getAccessToken());
+console.log("TOKEN_LEN=>", (getAccessToken() || "").length);
+console.log("TOKEN_HEAD=>", (getAccessToken() || "").slice(0, 12)); 
+
+
+const apiFetch = async (url, options = {}) => {
+  const token = getAccessToken();
+  const headers = {
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `jwt ${token}` } : {}),
+  };
+
+  const res = await fetch(url, { ...options, headers });
+  const text = await res.text();
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
+  if (!res.ok) {
+    const msg =
+      (data && (data.detail || data.error || data.message)) ||
+      `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+  return fetch(url, { ...options, headers });
+};
+
+const normalizeSessions = (sessions) => {
+  if (!sessions) return [];
+  if (Array.isArray(sessions)) return sessions;
+  if (typeof sessions === "object") {
+    const keys = Object.keys(sessions);
+    return keys.map((k) => ({ session_id: k, ...(sessions[k] || {}) }));
+  }
+  return [];
+};
+
+const normalizeHistoryToMessages = (history) => {
+  const out = [];
+
+  const pushRole = (role, content) => {
+    if (content == null || content === "") return;
+    const r = String(role || "").toLowerCase();
+    const from =
+      r === "user" || r === "human"
+        ? "user"
+        : r === "assistant" || r === "bot"
+        ? "bot"
+        : "bot";
+
+    out.push({
+      id: Date.now() + Math.random(),
+      from,
+      type: "text",
+      text: typeof content === "string" ? content : JSON.stringify(content),
+    });
+  };
+
+  const walk = (h) => {
+    if (!h) return;
+
+    if (Array.isArray(h)) {
+      h.forEach((item) => {
+        if (!item) return;
+
+        if (item.role && item.content != null) {
+          pushRole(item.role, item.content);
+          return;
+        }
+
+        if (item.from && item.text != null) {
+          out.push({
+            id: Date.now() + Math.random(),
+            from: item.from === "user" ? "user" : "bot",
+            type: item.type || "text",
+            text: item.text,
+          });
+          return;
+        }
+
+        if (item.user != null) pushRole("user", item.user);
+        if (item.assistant != null) pushRole("assistant", item.assistant);
+
+        if (item.messages) walk(item.messages);
+        if (item.history) walk(item.history);
+      });
+      return;
+    }
+
+    if (typeof h === "object") {
+      if (Array.isArray(h.messages)) return walk(h.messages);
+      if (Array.isArray(h.history)) return walk(h.history);
+      if (Array.isArray(h.turns)) return walk(h.turns);
+
+      const vals = Object.values(h);
+      if (vals.length) walk(vals);
+    }
+  };
+
+  walk(history);
+  return out;
+};
 
 // helpers
 const formatBytes = (bytes) => {
@@ -61,7 +169,7 @@ const safeJsonParse = (str, fallback) => {
 
 const ChatPage = () => {
   // =====================
-  // Multi chat storage (MOCK): localStorage
+  // Multi chat storage (localStorage cache)
   // =====================
   const STORAGE_KEY = "hooshyar_mock_chats_v1";
 
@@ -79,7 +187,6 @@ const ChatPage = () => {
     const saved = safeJsonParse(localStorage.getItem(STORAGE_KEY), null);
     if (saved?.chats?.length) return saved.chats;
 
-    // initial mock chats
     const now = Date.now();
     return [
       {
@@ -87,6 +194,8 @@ const ChatPage = () => {
         title: "گفتگو 1",
         createdAt: now,
         updatedAt: now,
+        sessionId: null,
+        hydrated: false,
         messages: [defaultBotHello],
       },
     ];
@@ -126,6 +235,7 @@ const ChatPage = () => {
   // =====================
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   // Voice recording state
   const [isRecording, setIsRecording] = useState(false);
@@ -156,6 +266,104 @@ const ChatPage = () => {
   }, []);
 
   // =====================
+  // API: load sessions once
+  // =====================
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const data = await apiFetch('${API_BASE}/api/assistant/sessions/', { method: "GET" });
+        const sessions = normalizeSessions(data?.sessions);
+
+        setChats((prev) => {
+          const existingBySession = new Map(
+            prev.filter((c) => c.sessionId).map((c) => [c.sessionId, c])
+          );
+
+          const fromApi = sessions
+            .map((s, idx) => {
+              const sid =
+                s.session_id || s.id || s.sessionId || s.session || s.uuid || null;
+              if (!sid) return null;
+
+              const existing = existingBySession.get(sid);
+              if (existing) {
+                return {
+                  ...existing,
+                  title: existing.title || s.title || s.name || `گفتگو ${idx + 1}`,
+                };
+              }
+
+              const now = Date.now() + idx;
+              return {
+                id: `chat_${sid}`,
+                title: s.title || s.name || `گفتگو ${idx + 1}`,
+                createdAt: now,
+                updatedAt: now,
+                sessionId: sid,
+                hydrated: false,
+                messages: [defaultBotHello],
+              };
+            })
+            .filter(Boolean);
+
+          const localsWithoutSession = prev.filter((c) => !c.sessionId);
+          const merged = [...fromApi, ...localsWithoutSession];
+
+          const seen = new Set();
+          return merged.filter((c) => {
+            if (seen.has(c.id)) return false;
+            seen.add(c.id);
+            return true;
+          });
+        });
+      } catch {
+        // اگر JWT/شبکه مشکل داشت، همون لوکال می‌مونه
+      }
+    };
+
+    loadSessions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // =====================
+  // API: hydrate history when selecting a session chat (once)
+  // =====================
+  useEffect(() => {
+    const hydrateHistoryIfNeeded = async () => {
+      if (!activeChat?.sessionId) return;
+      if (activeChat?.hydrated) return;
+
+      setLoadingHistory(true);
+      try {
+        const data = await apiFetch(`${API_BASE}/api/assistant/history/${activeChat.sessionId}/`, {
+          method: "GET",
+        });
+
+        const msgs = normalizeHistoryToMessages(data?.history || data);
+
+        setChats((prev) =>
+          prev.map((c) => {
+            if (c.id !== activeChat.id) return c;
+            return {
+              ...c,
+              hydrated: true,
+              updatedAt: Date.now(),
+              messages: msgs.length ? msgs : c.messages,
+            };
+          })
+        );
+      } catch {
+        // اگر تاریخچه نشد، همون پیام‌های فعلی می‌مونه
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    hydrateHistoryIfNeeded();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeChatId]);
+
+  // =====================
   // Chat actions
   // =====================
   const createNewChat = () => {
@@ -165,6 +373,8 @@ const ChatPage = () => {
       title: `گفتگو ${chats.length + 1}`,
       createdAt: now,
       updatedAt: now,
+      sessionId: null,
+      hydrated: true,
       messages: [
         {
           id: now + 1,
@@ -182,8 +392,6 @@ const ChatPage = () => {
   const deleteChat = (chatId) => {
     setChats((prev) => {
       const next = prev.filter((c) => c.id !== chatId);
-
-      // اگر چت فعال حذف شد، برو روی اولین چت باقی‌مانده
       if (activeChatId === chatId) {
         setActiveChatId(next[0]?.id || null);
       }
@@ -206,8 +414,17 @@ const ChatPage = () => {
     updateChatMessages(activeChat.id, (msgs) => [...msgs, msg]);
   };
 
+  const setActiveChatSessionId = (chatId, sessionId) => {
+    setChats((prev) =>
+      prev.map((c) => {
+        if (c.id !== chatId) return c;
+        return { ...c, sessionId: sessionId || c.sessionId };
+      })
+    );
+  };
+
   // =====================
-  // Text send
+  // Text send => API: POST /api/assistant/chat/
   // =====================
   const handleSend = async (e) => {
     e.preventDefault();
@@ -219,10 +436,29 @@ const ChatPage = () => {
 
     setLoading(true);
     try {
-      const reply = await mockChatApi("text");
-      addMessageToActive({ id: Date.now() + 1, from: "bot", type: "text", text: reply });
+      const payload = {
+        message: text,
+        session_id: activeChat?.sessionId || null,
+      };
 
-      // update title on first user message
+      const res = await apiFetch(`${API_BASE}/api/assistant/chat/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res?.session_id && !activeChat?.sessionId) {
+        setActiveChatSessionId(activeChat.id, res.session_id);
+      }
+
+      const assistantText = res?.assistant_message || res?.message || "پاسخی دریافت نشد.";
+      addMessageToActive({
+        id: Date.now() + 1,
+        from: "bot",
+        type: "text",
+        text: assistantText,
+      });
+
       setChats((prev) =>
         prev.map((c) => {
           if (c.id !== activeChat.id) return c;
@@ -231,13 +467,20 @@ const ChatPage = () => {
           return { ...c, title: text.length > 18 ? `${text.slice(0, 18)}…` : text };
         })
       );
+    } catch (err) {
+      addMessageToActive({
+        id: Date.now() + 2,
+        from: "bot",
+        type: "text",
+        text: `خطا: ${err?.message || "مشکل در ارسال پیام"}`,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   // =====================
-  // Attach file
+  // Attach file (UI حفظ میشه؛ به API چت فقط اسم فایل رو به عنوان متن می‌فرستیم)
   // =====================
   const onPickFile = () => fileInputRef.current?.click();
 
@@ -254,22 +497,47 @@ const ChatPage = () => {
       fileSize: file.size,
       fileType: file.type,
       fileUrl,
-      // NOTE: file itself is not serializable for localStorage; keep for runtime only if needed:
-      // file,
     });
     e.target.value = "";
 
     setLoading(true);
     try {
-      const reply = await mockChatApi("file");
-      addMessageToActive({ id: Date.now() + 1, from: "bot", type: "text", text: reply });
+      const text = `📎 فایل: ${file.name}`;
+      const payload = {
+        message: text,
+        session_id: activeChat?.sessionId || null,
+      };
+
+      const res = await apiFetch(`${API_BASE}/api/assistant/chat/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res?.session_id && !activeChat?.sessionId) {
+        setActiveChatSessionId(activeChat.id, res.session_id);
+      }
+
+      addMessageToActive({
+        id: Date.now() + 1,
+        from: "bot",
+        type: "text",
+        text: res?.assistant_message || "فایل دریافت شد.",
+      });
+    } catch (err) {
+      addMessageToActive({
+        id: Date.now() + 2,
+        from: "bot",
+        type: "text",
+        text: `خطا: ${err?.message || "مشکل در ارسال"}`,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   // =====================
-  // Voice recording
+  // Voice recording => API: multipart/form-data (audio)
   // =====================
   const startRecording = async () => {
     if (loading) return;
@@ -303,20 +571,44 @@ const ChatPage = () => {
 
         const audioUrl = URL.createObjectURL(audioBlob);
 
-        // IMPORTANT: Blob cannot be persisted in localStorage; we store only url for current session.
         addMessageToActive({
           id: Date.now(),
           from: "user",
           type: "audio",
           audioUrl,
           audioMime: blobType,
-          // audioBlob,
         });
 
         setLoading(true);
         try {
-          const reply = await mockChatApi("audio");
-          addMessageToActive({ id: Date.now() + 1, from: "bot", type: "text", text: reply });
+          const fd = new FormData();
+          fd.append("session_id", activeChat?.sessionId || "");
+          fd.append("audio", audioBlob, "voice.webm");
+
+          const token = getAccessToken();
+          const res = await apiFetch(`${API_BASE}/api/assistant/chat/`, {
+            method: "POST",
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            body: fd,
+          });
+
+          if (res?.session_id && !activeChat?.sessionId) {
+            setActiveChatSessionId(activeChat.id, res.session_id);
+          }
+
+          addMessageToActive({
+            id: Date.now() + 1,
+            from: "bot",
+            type: "text",
+            text: res?.assistant_message || "🎧 پیام صوتی دریافت شد.",
+          });
+        } catch (err) {
+          addMessageToActive({
+            id: Date.now() + 2,
+            from: "bot",
+            type: "text",
+            text: `خطا: ${err?.message || "مشکل در ارسال صوت"}`,
+          });
         } finally {
           setLoading(false);
         }
@@ -367,7 +659,6 @@ const ChatPage = () => {
     </Box>
   );
 
-  // Telegram-like simple audio pill (no header/footer)
   const AudioMessage = ({ msg }) => {
     const audioRef = useRef(null);
 
@@ -628,6 +919,7 @@ const ChatPage = () => {
                   secondary={
                     <Typography sx={{ fontSize: 12, opacity: 0.75, fontFamily: "Vazirmatn, sans-serif" }}>
                       {(c.messages || []).length} پیام
+                      {c.sessionId ? "" : " (لوکال)"}
                     </Typography>
                   }
                 />
@@ -666,18 +958,26 @@ const ChatPage = () => {
       >
         {/* Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Box sx={{ flex: 1 }} />
           <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
             {activeChat?.title || "گفتگو"}
           </Typography>
-          
-          
+          <Box sx={{ flex: 1 }} />
+          <Typography sx={{ fontSize: 12, opacity: 0.65, fontFamily: "Vazirmatn, sans-serif" }}>
+            {(activeChat?.messages || []).length} پیام
+          </Typography>
         </Box>
 
         <Divider sx={{ mb: 2 }} />
 
         {/* Messages */}
         <Box sx={{ flex: 1, overflowY: "auto", mb: 2, pr: 0.5 }}>
+          {loadingHistory && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+              <CircularProgress size={18} />
+              <Typography sx={{ fontSize: 12, opacity: 0.7 }}>در حال دریافت تاریخچه…</Typography>
+            </Box>
+          )}
+
           {(activeChat?.messages || []).map((m) => (
             <Box
               key={m.id}
@@ -689,7 +989,7 @@ const ChatPage = () => {
             >
               <Bubble from={m.from}>
                 {m.type === "text" && (
-                  <Typography sx={{ fontSize: "0.98rem", lineHeight: 1.8, whiteSpace: "pre-wrap" ,fontFamily: "Vazirmatn, sans-serif",}}>
+                  <Typography sx={{ fontSize: "0.98rem", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
                     {m.text}
                   </Typography>
                 )}
