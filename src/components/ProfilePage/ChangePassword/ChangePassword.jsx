@@ -34,15 +34,6 @@ const ChangePassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordBox, setShowPasswordBox] = useState(true);
 
-  const convertToPersian = (number) => {
-    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-    return number
-      .toString()
-      .split("")
-      .map((digit) => persianDigits[parseInt(digit, 10)] || digit)
-      .join("");
-  };
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleShowPasswordBox = () => {
     setShowPasswordBox((showPasswordBox) => !showPasswordBox);
@@ -140,7 +131,7 @@ const ChangePassword = () => {
               name="currentPassword"
               label="رمز عبور"
               type={showPassword ? "text" : "password"}
-              value={convertToPersian(currentPassword)}
+              value={currentPassword}
               onChange={handlePasswordChange}
               fullWidth
               margin="normal"
@@ -170,7 +161,7 @@ const ChangePassword = () => {
               name="newPassword"
               label="رمزعبور جدید"
               type={showPassword ? "text" : "password"}
-              value={convertToPersian(newPassword)}
+              value={newPassword}
               onChange={handlePasswordChange}
               fullWidth
               margin="normal"
@@ -200,7 +191,7 @@ const ChangePassword = () => {
               name="repeatedPassword"
               label="تکرار رمزعبور"
               type={showPassword ? "text" : "password"}
-              value={convertToPersian(repeatedPassword)}
+              value={repeatedPassword}
               onChange={handlePasswordChange}
               fullWidth
               margin="normal"

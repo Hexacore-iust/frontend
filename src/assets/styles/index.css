@@ -1,4 +1,77 @@
-@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600&display=swap");
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-DemiBold.woff2")
+    format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-ExtraBold.woff2")
+    format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-Heavy.woff2") format("woff2");
+  font-weight: 950;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yekan";
+  src: url("../styles/font/yekan/IRANYekanXFaNum-ExtraBlack.woff2")
+    format("woff2");
+  font-weight: 1000;
+  font-style: normal;
+  font-display: swap;
+}
 
 * {
   margin: 0;
@@ -7,7 +80,7 @@
 }
 
 body {
-  font-family: "Vazirmatn", sans-serif;
+  font-family: "Yekan", sans-serif;
   overflow-x: hidden;
 }
 

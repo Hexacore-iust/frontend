@@ -44,15 +44,6 @@ const Profile = () => {
     job: "",
   });
 
-  const convertToPersian = (number) => {
-    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-    return number
-      .toString()
-      .split("")
-      .map((digit) => persianDigits[parseInt(digit, 10)] || digit)
-      .join("");
-  };
-
   const handleChangeDate = (value) => {
     setDate((prev) => ({
       ...prev,
@@ -300,7 +291,7 @@ const Profile = () => {
             <TextField
               name="phoneNumber"
               label="تلفن همراه"
-              value={convertToPersian(formData.phoneNumber)}
+              value={formData.phoneNumber}
               onChange={(e) => handleChange(e)}
               fullWidth
               margin="normal"
