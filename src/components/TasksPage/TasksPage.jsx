@@ -6,7 +6,7 @@ import {
 } from 'react-icons/fa';
 import { SlCalender, SlMagnifier, SlShare } from 'react-icons/sl';
 import PersianDate from 'persian-date';
-import { tokenStorage } from "../../api/axios.js";
+import { tokenStorage, apiInstance } from "../../api/axios.js";
 
 // Handles { message, task: { ... } } or direct task
 const normalizeTask = (task) => {
@@ -140,32 +140,16 @@ const TasksPage = () => {
       const nextDay = new Date(gDate);
       nextDay.setDate(nextDay.getDate() + 1);
       const nextDayString = `${nextDay.getFullYear()}-${pad(nextDay.getMonth() + 1)}-${pad(nextDay.getDate())}`;
-      const url = `https://hexacore-iust-backend.liara.run/api/tasks/?time_after=${gDateString}&time_before=${nextDayString}`;
 
-      const token = tokenStorage.getAccess();
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-      const response = await fetch(url, { headers });
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const err = await response.json();
-          if (err.detail?.includes('token_not_valid')) {
-            tokenStorage.clear();
-            alert('نشست منقضی شده. لطفاً دوباره وارد شوید.');
-            return;
-          }
-          throw new Error(err.detail || 'دریافت فعالیت‌ها با خطا مواجه شد.');
+      // ✅ استفاده از apiInstance با پارامترهای استاندارد
+      const response = await apiInstance.get('/api/tasks/', {
+        params: {
+          time_after: gDateString,
+          time_before: nextDayString
         }
+      });
 
-        const text = await response.text();
-        console.error('NON-JSON ERROR RESPONSE:', text);
-
-        throw new Error('پاسخ غیرمنتظره از سرور (احتمالاً خطای احراز هویت یا تنظیمات سرور)');
-      }
-
-
-      const rawData = await response.json();
+      const rawData = response.data;
       const tasksArray = rawData.tasks || rawData;
       const taskList = Array.isArray(tasksArray) ? tasksArray : [tasksArray];
       const normalizedTasks = taskList.map(normalizeTask);
@@ -173,7 +157,20 @@ const TasksPage = () => {
     } catch (error) {
       console.error('Error fetching tasks:', error);
       setTasks([]);
-      alert(`خطا: ${error.message}`);
+      
+      // ✅ مدیریت هوشمند خطاها توسط اینترسپتورها
+      if (error.response?.status === 401) {
+        // اینترسپتور قبلاً توکن‌ها را پاک کرده - فقط نمایش پیام
+        alert('نشست شما منقضی شده. لطفاً مجدداً وارد شوید.');
+        // اختیاری: هدایت به صفحه لاگین
+        // window.location.href = '/login';
+      } else {
+        const msg = error.response?.data?.detail || 
+                    error.response?.data?.message || 
+                    error.message || 
+                    'خطا در دریافت فعالیت‌ها';
+        alert(`خطا: ${msg}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -190,7 +187,6 @@ const TasksPage = () => {
 
   const handleAddOrUpdateTask = async (e) => {
     e.preventDefault();
-
     const taskData = editTask || newTask;
     if (!taskData.time) {
       alert('لطفاً زمان را وارد کنید.');
@@ -204,9 +200,7 @@ const TasksPage = () => {
         selectedDate.day,
       ]);
       const gDate = pDate.toDate();
-
       const [hours, minutes] = taskData.time.split(':').map(Number);
-
       const localDateTime = new Date(gDate);
       localDateTime.setHours(hours, minutes, 0, 0);
       const utcDatetime = localDateTime.toISOString();
@@ -218,38 +212,38 @@ const TasksPage = () => {
         category: parseInt(taskData.category),
       };
 
-      const token = tokenStorage.getAccess();
-      if (!token) {
-        tokenStorage.clear();
-        alert('لطفاً مجدداً وارد شوید.');
-        return;
-      }
-
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      };
-
+      // ✅ حذف چک دستی توکن و استفاده از apiInstance
       let response;
       if (editTask) {
-        // Update
-        response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${editTask.id}/update/`, {
-          method: 'PATCH',
-          headers,
-          body: JSON.stringify(payload),
-        });
+        response = await apiInstance.patch(`/api/tasks/${editTask.id}/update/`, payload);
       } else {
-        // Create
-        response = await fetch('https://hexacore-iust-backend.liara.run/api/tasks/create/', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(payload),
-        });
+        response = await apiInstance.post('/api/tasks/create/', payload);
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      const savedTask = response.data;
+      const normalized = normalizeTask(savedTask);
+
+      if (editTask) {
+        setTasks(prev => prev.map(t => t.id === normalized.id ? normalized : t));
+        setEditTask(null);
+      } else {
+        setTasks(prev => [...prev, normalized]);
+        setNewTask({ title: '', description: '', time: '', category: '1' });
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('API Error:', error);
+      
+      if (error.response?.status === 401) {
+        alert('نشست شما منقضی شده. لطفاً مجدداً وارد شوید.');
+        return;
+      }
+      
+      // پردازش خطاهای اعتبارسنجی
+      if (error.response?.data) {
+        const errorData = error.response.data;
         let errorMessage = 'خطا در پردازش درخواست';
+        
         if (typeof errorData === 'object') {
           errorMessage = Object.entries(errorData)
             .map(([field, messages]) => {
@@ -260,29 +254,10 @@ const TasksPage = () => {
             })
             .join('; ');
         }
-        if (errorMessage.includes('token_not_valid')) {
-          tokenStorage.clear();
-          alert('نشست منقضی شده.');
-          return;
-        }
-        throw new Error(errorMessage);
-      }
-
-      const savedTask = await response.json();
-      const normalized = normalizeTask(savedTask);
-
-      if (editTask) {
-        setTasks(prev => prev.map(t => t.id === normalized.id ? normalized : t));
-        setEditTask(null);
+        alert(`خطا:\n${errorMessage}`);
       } else {
-        setTasks(prev => [...prev, normalized]);
-        setNewTask({ title: '', description: '', time: '', category: '1' });
+        alert('خطای شبکه یا سرور. لطفاً دوباره تلاش کنید.');
       }
-
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('API Error:', error);
-      alert(`خطا:\n${error.message}`);
     }
   };
 
@@ -296,34 +271,20 @@ const TasksPage = () => {
     if (!deleteTask) return;
 
     try {
-      const token = tokenStorage.getAccess();
-      if (!token) {
-        tokenStorage.clear();
-        alert('لطفاً دوباره وارد شوید.');
-        setDeleteTask(null);
-        return;
-      }
-
-      const response = await fetch(`https://hexacore-iust-backend.liara.run/api/tasks/${deleteTask.id}/delete/`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          tokenStorage.clear();
-          alert('نشست منقضی شده.');
-        } else {
-          throw new Error('حذف فعالیت با خطا مواجه شد.');
-        }
-        return;
-      }
-
+      // ✅ استفاده از apiInstance بدون مدیریت دستی هدر
+      await apiInstance.delete(`/api/tasks/${deleteTask.id}/delete/`);
       setTasks(prev => prev.filter(t => t.id !== deleteTask.id));
       setDeleteTask(null);
     } catch (error) {
       console.error('Delete error:', error);
-      alert(`خطا در حذف فعالیت: ${error.message}`);
+      
+      if (error.response?.status === 401) {
+        alert('نشست شما منقضی شده. لطفاً مجدداً وارد شوید.');
+      } else {
+        const msg = error.response?.data?.detail || 
+                    'حذف فعالیت با خطا مواجه شد';
+        alert(`خطا: ${msg}`);
+      }
       setDeleteTask(null);
     }
   };
