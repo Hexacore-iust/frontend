@@ -130,6 +130,52 @@ const TasksPage = () => {
     };
   }, [isModalOpen, deleteTask]); 
 
+  // ✅ تشخیص همپوشانی بر اساس محدوده زمانی (با فرض طول 30 دقیقه‌ای)
+  const tasksWithOverlapInfo = React.useMemo(() => {
+    if (tasks.length === 0) return [];
+    
+    // تبدیل زمان‌ها به دقیقه از اول روز
+    const tasksWithMinutes = tasks.map(task => {
+      const [hour, minute] = task.time.split(':').map(Number);
+      const startMinutes = hour * 60 + minute;
+      return {
+        ...task,
+        startMinutes,
+        endMinutes: startMinutes + 82 // فرض طول 30 دقیقه‌ای
+      };
+    });
+
+    // گروه‌بندی تسک‌های همپوشان
+    const groups = [];
+    let currentGroup = [];
+    let currentMaxEnd = -Infinity;
+
+    tasksWithMinutes.sort((a, b) => a.startMinutes - b.startMinutes);
+
+    tasksWithMinutes.forEach(task => {
+      if (task.startMinutes < currentMaxEnd) {
+        currentGroup.push(task);
+        currentMaxEnd = Math.max(currentMaxEnd, task.endMinutes);
+      } else {
+        if (currentGroup.length > 0) groups.push(currentGroup);
+        currentGroup = [task];
+        currentMaxEnd = task.endMinutes;
+      }
+    });
+
+    if (currentGroup.length > 0) groups.push(currentGroup);
+
+    // اضافه کردن اطلاعات گروه به هر تسک
+    return tasksWithMinutes.map(task => {
+      const group = groups.find(g => g.some(t => t.id === task.id));
+      return {
+        ...task,
+        groupSize: group ? group.length : 1,
+        groupIndex: group ? group.indexOf(task) : 0,
+      };
+    });
+  }, [tasks]);
+
   const fetchTasksForDate = async (dateObj) => {
     setLoading(true);
     try {
@@ -716,14 +762,33 @@ const TasksPage = () => {
               <div className="events-list" style={{ position: 'relative', height: '1440px' }}>
                 {loading ? (
                   <div style={{ textAlign: 'center', marginTop: '20px' }}>در حال بارگذاری...</div>
-                ) : tasks.length === 0 ? (
+                ) : tasksWithOverlapInfo.length === 0 ? (
                   <div style={{ textAlign: 'center', marginTop: '20px', color: '#888' }}>
                     هیچ فعالیتی برای این روز وجود ندارد.
                   </div>
-                ) : (
-                  tasks.map((task) => {
-                    const [hour, minute] = task.time.split(':').map(Number);
-                    const topPosition = hour * 60 + minute;
+                  ) : (
+                    tasksWithOverlapInfo.map((task) => {
+                    const topPosition = task.startMinutes;
+                    
+                    // ✅ تشخیص همپوشانی
+                    const isOverlapping = task.groupSize > 1;
+                    
+                    // ✅ محاسبه عرض و موقعیت با فاصله 4px بین کارت‌ها برای نمایش بهتر گوشه‌های گرد
+                    const gap = 4; // فاصله بین کارت‌ها برای دیدن واضح گوشه‌های گرد
+                    const cardWidth = isOverlapping 
+                      ? `calc((100% - ${(task.groupSize - 1) * gap}px) / ${task.groupSize})`
+                      : 'calc(100% - 10px)';
+                    
+                    const cardLeft = isOverlapping
+                      ? `calc(${task.groupIndex} * (${cardWidth} + ${gap}px))`
+                      : '0';
+
+                    // ✅ همیشه چهار گوشه گرد برای هر تسک
+                    const borderRadius = '6px';
+                    
+                    // ✅ رنگ مرز چپ بر اساس دسته‌بندی
+                    const borderColor = task.category === 1 ? '#18df8fff' : 
+                                      task.category === 2 ? '#9c27b0' : '#ff9800';
 
                     return (
                       <div
@@ -732,13 +797,16 @@ const TasksPage = () => {
                         style={{
                           position: 'absolute',
                           top: `${topPosition}px`,
-                          width: 'calc(100% - 10px)',
+                          left: cardLeft,
+                          width: cardWidth,
                           padding: '8px 10px',
-                          borderRadius: '6px',
-                          borderLeft: '4px solid',
-                          backgroundColor: task.category === 1 ? '#ffffffff' : task.category === 2 ? '#f3e5f5' : '#fff3e0',
-                          borderColor: task.category === 1 ? '#18df8fff' : task.category === 2 ? '#9c27b0' : '#ff9800',
+                          borderRadius: borderRadius, // ✅ همیشه چهار گوشه گرد
+                          borderLeft: `4px solid ${borderColor}`, // ✅ همیشه مرز چپ فعال
+                          backgroundColor: task.category === 1 ? '#ffffffff' : 
+                                        task.category === 2 ? '#f3e5f5' : '#fff3e0',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                          // ✅ فاصله بین کارت‌ها برای نمایش واضح گوشه‌های گرد
+                          marginRight: isOverlapping && task.groupIndex < task.groupSize - 1 ? `${gap}px` : '0',
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
