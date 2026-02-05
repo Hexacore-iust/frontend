@@ -147,8 +147,8 @@ const Dashboard = () => {
               schedule.map((item) => {
                 return (
                   <CustomAccordion
-                    key={item.id}
-                    summary={item.title}
+                    key={item?.id}
+                    summary={item?.title}
                     detailsChildren={
                       <div
                         style={{
@@ -158,17 +158,17 @@ const Dashboard = () => {
                           color: "#777",
                         }}
                       >
-                        <div>{item.description}</div>
+                        <div>{item?.description}</div>
                         <div>
-                          {toHM(item.end_time)}
-                          {item.end_time ? " - " : <></>}
-                          {toHM(item.start_time)}
+                          {toHM(item?.end_time)}
+                          {item?.end_time ? " - " : <></>}
+                          {toHM(item?.start_time)}
                         </div>
-                        <div>{toHM(item.time)}</div>
+                        <div>{toHM(item?.time)}</div>
                       </div>
                     }
                     hasAction={false}
-                    color={item.category.color}
+                    color={item?.category?.color}
                   />
                 );
               })
@@ -197,7 +197,7 @@ const Dashboard = () => {
                 dateFilteredSchedule.map((item) => {
                   return (
                     <CustomAccordion
-                      key={item.id}
+                      key={item?.id}
                       summary={item?.title}
                       detailsChildren={
                         <div
