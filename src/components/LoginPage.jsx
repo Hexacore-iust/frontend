@@ -28,16 +28,6 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  const convertToPersian = (str) => {
-    const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-    return str
-      .split("")
-      .map((char) =>
-        /[0-9]/.test(char) ? persianDigits[parseInt(char, 10)] : char,
-      )
-      .join("");
-  };
-
   const togglePasswordVisibility = () => setShowPassword((s) => !s);
 
   const handleEmailChange = (e) => {
@@ -192,7 +182,7 @@ const LoginPage = () => {
               required
               label="ایمیل"
               type="email"
-              value={convertToPersian(email)}
+              value={email}
               onChange={handleEmailChange}
               error={Boolean(emailError)}
               helperText={emailError}
@@ -206,7 +196,7 @@ const LoginPage = () => {
               required
               label="رمز عبور"
               type={showPassword ? "text" : "password"}
-              value={convertToPersian(password)}
+              value={password}
               onChange={handlePasswordChange}
               error={Boolean(passwordError)}
               helperText={passwordError}
