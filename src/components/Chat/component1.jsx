@@ -23,56 +23,37 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { IoSend, IoPlay, IoPause } from "react-icons/io5";
 
-const API_BASE = "https://jebel-agent.liara.run";
+import { apiInstance } from "../../api/axios"
 
-// =====================
-// API helpers
-// =====================
-const getAccessToken = () =>
-  localStorage.getItem("accessToken") ||
-  localStorage.getItem("access_token") ||
-  localStorage.getItem("access") ||
-  localStorage.getItem("token") ||
-  "";
+// helpers
+const formatBytes = (bytes) => {
+  if (!bytes && bytes !== 0) return "";
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${sizes[i]}`;
+};
 
-console.log("LS_KEYS=>", Object.keys(localStorage));
-console.log("LS_user=>", localStorage.getItem("user"));
-console.log("LS_auth=>", localStorage.getItem("auth"));
-console.log("TOKEN=>", getAccessToken());
-console.log("TOKEN_LEN=>", (getAccessToken() || "").length);
-console.log("TOKEN_HEAD=>", (getAccessToken() || "").slice(0, 12)); 
+const formatTime = (sec) => {
+  if (sec == null || Number.isNaN(sec)) return "--:--";
+  const s = Math.max(0, Math.floor(sec));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+};
 
-
-const apiFetch = async (url, options = {}) => {
-  const token = getAccessToken();
-  const headers = {
-    ...(options.headers || {}),
-    ...(token ? { Authorization: `jwt ${token}` } : {}),
-  };
-
-  const res = await fetch(url, { ...options, headers });
-  const text = await res.text();
-  let data = null;
+const safeJsonParse = (str, fallback) => {
   try {
-    data = text ? JSON.parse(text) : null;
+    return JSON.parse(str);
   } catch {
-    data = text;
+    return fallback;
   }
-  if (!res.ok) {
-    const msg =
-      (data && (data.detail || data.error || data.message)) ||
-      `HTTP ${res.status}`;
-    throw new Error(msg);
-  }
-  return fetch(url, { ...options, headers });
 };
 
 const normalizeSessions = (sessions) => {
   if (!sessions) return [];
   if (Array.isArray(sessions)) return sessions;
   if (typeof sessions === "object") {
-    const keys = Object.keys(sessions);
-    return keys.map((k) => ({ session_id: k, ...(sessions[k] || {}) }));
+    return Object.keys(sessions).map((k) => ({ session_id: k, ...(sessions[k] || {}) }));
   }
   return [];
 };
@@ -110,16 +91,6 @@ const normalizeHistoryToMessages = (history) => {
           return;
         }
 
-        if (item.from && item.text != null) {
-          out.push({
-            id: Date.now() + Math.random(),
-            from: item.from === "user" ? "user" : "bot",
-            type: item.type || "text",
-            text: item.text,
-          });
-          return;
-        }
-
         if (item.user != null) pushRole("user", item.user);
         if (item.assistant != null) pushRole("assistant", item.assistant);
 
@@ -133,7 +104,6 @@ const normalizeHistoryToMessages = (history) => {
       if (Array.isArray(h.messages)) return walk(h.messages);
       if (Array.isArray(h.history)) return walk(h.history);
       if (Array.isArray(h.turns)) return walk(h.turns);
-
       const vals = Object.values(h);
       if (vals.length) walk(vals);
     }
@@ -141,30 +111,6 @@ const normalizeHistoryToMessages = (history) => {
 
   walk(history);
   return out;
-};
-
-// helpers
-const formatBytes = (bytes) => {
-  if (!bytes && bytes !== 0) return "";
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${sizes[i]}`;
-};
-
-const formatTime = (sec) => {
-  if (sec == null || Number.isNaN(sec)) return "--:--";
-  const s = Math.max(0, Math.floor(sec));
-  const m = Math.floor(s / 60);
-  const r = s % 60;
-  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
-};
-
-const safeJsonParse = (str, fallback) => {
-  try {
-    return JSON.parse(str);
-  } catch {
-    return fallback;
-  }
 };
 
 const ChatPage = () => {
@@ -195,7 +141,7 @@ const ChatPage = () => {
         createdAt: now,
         updatedAt: now,
         sessionId: null,
-        hydrated: false,
+        hydrated: true,
         messages: [defaultBotHello],
       },
     ];
@@ -207,7 +153,7 @@ const ChatPage = () => {
     return null;
   });
 
-  // persist
+  // persist chats
   useEffect(() => {
     const payload = { chats, activeChatId: activeChatId || chats?.[0]?.id || null };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -271,7 +217,7 @@ const ChatPage = () => {
   useEffect(() => {
     const loadSessions = async () => {
       try {
-        const data = await apiFetch('${API_BASE}/api/assistant/sessions/', { method: "GET" });
+        const { data } = await apiInstance.get("/api/assistant/sessions/");
         const sessions = normalizeSessions(data?.sessions);
 
         setChats((prev) => {
@@ -281,8 +227,7 @@ const ChatPage = () => {
 
           const fromApi = sessions
             .map((s, idx) => {
-              const sid =
-                s.session_id || s.id || s.sessionId || s.session || s.uuid || null;
+              const sid = s.session_id || s.id || s.sessionId || s.session || s.uuid || null;
               if (!sid) return null;
 
               const existing = existingBySession.get(sid);
@@ -317,7 +262,7 @@ const ChatPage = () => {
           });
         });
       } catch {
-        // اگر JWT/شبکه مشکل داشت، همون لوکال می‌مونه
+        // ignore
       }
     };
 
@@ -335,9 +280,9 @@ const ChatPage = () => {
 
       setLoadingHistory(true);
       try {
-        const data = await apiFetch(`${API_BASE}/api/assistant/history/${activeChat.sessionId}/`, {
-          method: "GET",
-        });
+        const { data } = await apiInstance.get(
+          `/api/assistant/history/${activeChat.sessionId}/`
+        );
 
         const msgs = normalizeHistoryToMessages(data?.history || data);
 
@@ -353,7 +298,7 @@ const ChatPage = () => {
           })
         );
       } catch {
-        // اگر تاریخچه نشد، همون پیام‌های فعلی می‌مونه
+        // ignore
       } finally {
         setLoadingHistory(false);
       }
@@ -392,9 +337,7 @@ const ChatPage = () => {
   const deleteChat = (chatId) => {
     setChats((prev) => {
       const next = prev.filter((c) => c.id !== chatId);
-      if (activeChatId === chatId) {
-        setActiveChatId(next[0]?.id || null);
-      }
+      if (activeChatId === chatId) setActiveChatId(next[0]?.id || null);
       return next;
     });
   };
@@ -424,7 +367,7 @@ const ChatPage = () => {
   };
 
   // =====================
-  // Text send => API: POST /api/assistant/chat/
+  // Text send => POST /api/assistant/chat/
   // =====================
   const handleSend = async (e) => {
     e.preventDefault();
@@ -433,37 +376,33 @@ const ChatPage = () => {
     const text = input.trim();
     addMessageToActive({ id: Date.now(), from: "user", type: "text", text });
     setInput("");
-
     setLoading(true);
+
     try {
-      const payload = {
+      const { data } = await apiInstance.post("/api/assistant/chat/", {
         message: text,
         session_id: activeChat?.sessionId || null,
-      };
-
-      const res = await apiFetch(`${API_BASE}/api/assistant/chat/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
       });
 
-      if (res?.session_id && !activeChat?.sessionId) {
-        setActiveChatSessionId(activeChat.id, res.session_id);
+      if (data?.session_id && !activeChat?.sessionId) {
+        setActiveChatSessionId(activeChat.id, data.session_id);
       }
 
-      const assistantText = res?.assistant_message || res?.message || "پاسخی دریافت نشد.";
       addMessageToActive({
         id: Date.now() + 1,
         from: "bot",
         type: "text",
-        text: assistantText,
+        text: data?.assistant_message || "پاسخی دریافت نشد.",
       });
 
+      // title on first user message
       setChats((prev) =>
         prev.map((c) => {
           if (c.id !== activeChat.id) return c;
-          const hasUser = (c.messages || []).some((m) => m.from === "user" && m.type === "text");
-          if (hasUser) return c;
+          const hasUserText = (c.messages || []).some(
+            (m) => m.from === "user" && m.type === "text"
+          );
+          if (hasUserText) return c;
           return { ...c, title: text.length > 18 ? `${text.slice(0, 18)}…` : text };
         })
       );
@@ -472,7 +411,11 @@ const ChatPage = () => {
         id: Date.now() + 2,
         from: "bot",
         type: "text",
-        text: `خطا: ${err?.message || "مشکل در ارسال پیام"}`,
+        text:
+          err?.response?.data?.detail ||
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          "خطا در ارتباط با سرور",
       });
     } finally {
       setLoading(false);
@@ -480,7 +423,7 @@ const ChatPage = () => {
   };
 
   // =====================
-  // Attach file (UI حفظ میشه؛ به API چت فقط اسم فایل رو به عنوان متن می‌فرستیم)
+  // Attach file (UI فقط)
   // =====================
   const onPickFile = () => fileInputRef.current?.click();
 
@@ -502,34 +445,31 @@ const ChatPage = () => {
 
     setLoading(true);
     try {
-      const text = `📎 فایل: ${file.name}`;
-      const payload = {
-        message: text,
+      const { data } = await apiInstance.post("/api/assistant/chat/", {
+        message: `📎 فایل: ${file.name}`,
         session_id: activeChat?.sessionId || null,
-      };
-
-      const res = await apiFetch(`${API_BASE}/api/assistant/chat/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
       });
 
-      if (res?.session_id && !activeChat?.sessionId) {
-        setActiveChatSessionId(activeChat.id, res.session_id);
+      if (data?.session_id && !activeChat?.sessionId) {
+        setActiveChatSessionId(activeChat.id, data.session_id);
       }
 
       addMessageToActive({
         id: Date.now() + 1,
         from: "bot",
         type: "text",
-        text: res?.assistant_message || "فایل دریافت شد.",
+        text: data?.assistant_message || "فایل دریافت شد.",
       });
     } catch (err) {
       addMessageToActive({
         id: Date.now() + 2,
         from: "bot",
         type: "text",
-        text: `خطا: ${err?.message || "مشکل در ارسال"}`,
+        text:
+          err?.response?.data?.detail ||
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          "خطا در ارسال فایل",
       });
     } finally {
       setLoading(false);
@@ -537,7 +477,7 @@ const ChatPage = () => {
   };
 
   // =====================
-  // Voice recording => API: multipart/form-data (audio)
+  // Voice recording => multipart/form-data
   // =====================
   const startRecording = async () => {
     if (loading) return;
@@ -561,14 +501,12 @@ const ChatPage = () => {
 
       recorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
-
         if (recordTimerRef.current) clearInterval(recordTimerRef.current);
         recordTimerRef.current = null;
 
         const blobType = recorder.mimeType || "audio/webm";
         const audioBlob = new Blob(chunksRef.current, { type: blobType });
         chunksRef.current = [];
-
         const audioUrl = URL.createObjectURL(audioBlob);
 
         addMessageToActive({
@@ -582,32 +520,33 @@ const ChatPage = () => {
         setLoading(true);
         try {
           const fd = new FormData();
-          fd.append("session_id", activeChat?.sessionId || "");
+          if (activeChat?.sessionId) fd.append("session_id", activeChat.sessionId);
           fd.append("audio", audioBlob, "voice.webm");
 
-          const token = getAccessToken();
-          const res = await apiFetch(`${API_BASE}/api/assistant/chat/`, {
-            method: "POST",
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-            body: fd,
+          const { data } = await apiInstance.post("/api/assistant/chat/", fd, {
+            headers: { "Content-Type": "multipart/form-data" },
           });
 
-          if (res?.session_id && !activeChat?.sessionId) {
-            setActiveChatSessionId(activeChat.id, res.session_id);
+          if (data?.session_id && !activeChat?.sessionId) {
+            setActiveChatSessionId(activeChat.id, data.session_id);
           }
 
           addMessageToActive({
             id: Date.now() + 1,
             from: "bot",
             type: "text",
-            text: res?.assistant_message || "🎧 پیام صوتی دریافت شد.",
+            text: data?.assistant_message || "🎧 پیام صوتی دریافت شد.",
           });
         } catch (err) {
           addMessageToActive({
             id: Date.now() + 2,
             from: "bot",
             type: "text",
-            text: `خطا: ${err?.message || "مشکل در ارسال صوت"}`,
+            text:
+              err?.response?.data?.detail ||
+              err?.response?.data?.error ||
+              err?.response?.data?.message ||
+              "خطا در ارسال صوت",
           });
         } finally {
           setLoading(false);
@@ -617,7 +556,6 @@ const ChatPage = () => {
       recorder.start();
       setIsRecording(true);
       setRecordSeconds(0);
-
       recordTimerRef.current = setInterval(() => setRecordSeconds((s) => s + 1), 1000);
     } catch {
       addMessageToActive({
@@ -653,15 +591,16 @@ const ChatPage = () => {
         bgcolor: from === "user" ? "#F8F8F8" : "#00C2A8",
         color: from === "user" ? "text.primary" : "#fff",
         boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+        fontFamily: "Vazirmatn, sans-serif",
       }}
     >
       {children}
     </Box>
   );
 
+  // Telegram-like audio pill (no header/footer)
   const AudioMessage = ({ msg }) => {
     const audioRef = useRef(null);
-
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
     const [current, setCurrent] = useState(0);
@@ -789,11 +728,11 @@ const ChatPage = () => {
       <Box sx={{ minWidth: 260 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.75 }}>
           <InsertDriveFileIcon fontSize="small" />
-          <Typography sx={{ fontSize: 14, fontWeight: 800 }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 800, fontFamily: "Vazirmatn, sans-serif" }}>
             فایل ضمیمه
           </Typography>
           <Box sx={{ flex: 1 }} />
-          <Typography sx={{ fontSize: 12, opacity: 0.8 }}>
+          <Typography sx={{ fontSize: 12, opacity: 0.8, fontFamily: "Vazirmatn, sans-serif" }}>
             {formatBytes(msg.fileSize)}
           </Typography>
         </Box>
@@ -806,7 +745,7 @@ const ChatPage = () => {
             bgcolor: msg.from === "user" ? "#EFEFEF" : "rgba(255,255,255,0.18)",
           }}
         >
-          <Typography sx={{ fontSize: 13, wordBreak: "break-word" }}>
+          <Typography sx={{ fontSize: 13, wordBreak: "break-word", fontFamily: "Vazirmatn, sans-serif" }}>
             {msg.fileName}
           </Typography>
 
@@ -825,6 +764,7 @@ const ChatPage = () => {
                 fontSize: 13,
                 fontWeight: 800,
                 color: msg.from === "user" ? "#00A896" : "#fff",
+                fontFamily: "Vazirmatn, sans-serif",
               }}
             >
               دانلود
@@ -839,6 +779,7 @@ const ChatPage = () => {
                 fontSize: 13,
                 fontWeight: 800,
                 color: msg.from === "user" ? "#00A896" : "#fff",
+                fontFamily: "Vazirmatn, sans-serif",
               }}
             >
               باز کردن
@@ -974,7 +915,9 @@ const ChatPage = () => {
           {loadingHistory && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
               <CircularProgress size={18} />
-              <Typography sx={{ fontSize: 12, opacity: 0.7 }}>در حال دریافت تاریخچه…</Typography>
+              <Typography sx={{ fontSize: 12, opacity: 0.7, fontFamily: "Vazirmatn, sans-serif" }}>
+                در حال دریافت تاریخچه…
+              </Typography>
             </Box>
           )}
 
@@ -989,7 +932,14 @@ const ChatPage = () => {
             >
               <Bubble from={m.from}>
                 {m.type === "text" && (
-                  <Typography sx={{ fontSize: "0.98rem", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
+                  <Typography
+                    sx={{
+                      fontSize: "0.98rem",
+                      lineHeight: 1.8,
+                      whiteSpace: "pre-wrap",
+                      fontFamily: "Vazirmatn, sans-serif",
+                    }}
+                  >
                     {m.text}
                   </Typography>
                 )}
@@ -1046,7 +996,7 @@ const ChatPage = () => {
                     boxShadow: "0 0 0 4px rgba(229,57,53,0.15)",
                   }}
                 />
-                <Typography sx={{ fontSize: 13, color: "text.secondary" }}>
+                <Typography sx={{ fontSize: 13, color: "text.secondary", fontFamily: "Vazirmatn, sans-serif" }}>
                   در حال ضبط… {formatTime(recordSeconds)}
                 </Typography>
               </Box>
