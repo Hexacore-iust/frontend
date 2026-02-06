@@ -584,6 +584,8 @@ const ChatPage = () => {
     <Box
       sx={{
         maxWidth: "92%",
+        direction: "ltr",
+        textAlign: "right",
         borderRadius: 3,
         px: 2,
         py: 1.25,
