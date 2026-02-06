@@ -818,15 +818,16 @@ const ChatPage = () => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-          <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
-            گفتگوها
-          </Typography>
-          <Box sx={{ flex: 1 }} />
+          
           <Tooltip title="گفتگوی جدید">
             <IconButton onClick={createNewChat} size="small" sx={{ bgcolor: "rgba(0,0,0,0.04)" }}>
               <AddIcon fontSize="small" />
             </IconButton>
           </Tooltip>
+          <Box sx={{ flex: 1 }} />
+          <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
+            گفتگوها
+          </Typography>
         </Box>
 
         <Divider sx={{ mb: 1 }} />
@@ -856,12 +857,7 @@ const ChatPage = () => {
                       {c.title || "بدون عنوان"}
                     </Typography>
                   }
-                  secondary={
-                    <Typography sx={{ fontSize: 12, opacity: 0.75, fontFamily: "Vazirmatn, sans-serif" }}>
-                      {(c.messages || []).length} پیام
-                      {c.sessionId ? "" : " (لوکال)"}
-                    </Typography>
-                  }
+                  
                 />
 
                 <Tooltip title="حذف گفتگو">
@@ -898,12 +894,10 @@ const ChatPage = () => {
       >
         {/* Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+          
+          <Box sx={{ flex: 1 }} />
           <Typography sx={{ fontWeight: 900, fontSize: 14, fontFamily: "Vazirmatn, sans-serif" }}>
             {activeChat?.title || "گفتگو"}
-          </Typography>
-          <Box sx={{ flex: 1 }} />
-          <Typography sx={{ fontSize: 12, opacity: 0.65, fontFamily: "Vazirmatn, sans-serif" }}>
-            {(activeChat?.messages || []).length} پیام
           </Typography>
         </Box>
 
