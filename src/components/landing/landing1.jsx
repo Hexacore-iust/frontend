@@ -2,8 +2,6 @@ import React from "react";
 import { Grid, Box, Typography, Stack } from "@mui/material";
 import landing from "../../assets/Landing.png";
 
-
-
 const textBase = {
   fontSize: { xs: 12, sm: 13, md: 14, lg: 15 },
   lineHeight: 1.9,
@@ -34,7 +32,6 @@ export default function HeroSection() {
           bgcolor: "#E2F3EF",
           fontFamily: "Vazirmatn, sans-serif", // ⬅ فونت ثابت
           direction: "rtl",
-          
         }}
       >
         {/* تصویر */}
@@ -96,8 +93,8 @@ export default function HeroSection() {
                 mx: "auto",
               }}
             >
-              ایجنت هوش مصنوعی که تو را می‌شناسد،
-              با تو فکر می‌کند و برایت بهترین مسیر را طراحی می‌کند
+              ایجنت هوش مصنوعی که تو را می‌شناسد، با تو فکر می‌کند و برایت
+              بهترین مسیر را طراحی می‌کند
             </Typography>
           </Stack>
         </Grid>

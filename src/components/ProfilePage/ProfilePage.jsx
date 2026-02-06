@@ -96,7 +96,7 @@ const Profile = () => {
 
     const d = value instanceof Date ? value : new Date(value);
     const utcDate = new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
     );
     const year = utcDate.getUTCFullYear();
     const month = (utcDate.getUTCMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
@@ -126,7 +126,7 @@ const Profile = () => {
     appendIfNotEmpty("job_title", formData.job);
     appendIfNotEmpty(
       "date_of_birth",
-      toUtcMidnightISOString(formData.birthDate)
+      toUtcMidnightISOString(formData.birthDate),
     );
 
     return apiInstance.patch("/api/auth/profile/update/", formDataToSend, {

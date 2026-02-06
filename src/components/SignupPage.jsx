@@ -67,7 +67,7 @@ const SignupPage = () => {
     if (!v) return setPasswordError("رمز عبور الزامی است");
     if (!passwordRegex.test(v))
       return setPasswordError(
-        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد"
+        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد",
       );
     setPasswordError("");
 
@@ -118,7 +118,7 @@ const SignupPage = () => {
       hasError = true;
     } else if (!passwordRegex.test(password)) {
       setPasswordError(
-        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد"
+        "رمز عبور حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد",
       );
       hasError = true;
     }
@@ -147,7 +147,7 @@ const SignupPage = () => {
             password: password,
             password2: confirmPassword,
           }),
-        }
+        },
       );
 
       const data = await response.json();

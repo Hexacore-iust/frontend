@@ -143,12 +143,12 @@ const FileUpload = () => {
             <div>
               {files.length > 0 && (
                 <ul>
-                  {files.map((file) => (
-                    <li key={file.id}>
+                  {files?.map((file) => (
+                    <li key={file?.id}>
                       {/* Display file name */}
                       {
                         <img
-                          src={buildFileUrl(file.file)}
+                          src={buildFileUrl(file?.file)}
                           // alt={file.original_name}
                           style={{
                             width: "30px",
@@ -159,7 +159,7 @@ const FileUpload = () => {
                           }}
                         />
                       }
-                      {file.original_name}
+                      {file?.original_name}
 
                       <Button
                         onClick={() => handleFileDelete(file.id)}
@@ -174,10 +174,10 @@ const FileUpload = () => {
 
               {selectedFiles.length > 0 && (
                 <ul>
-                  {selectedFiles.map((file, index) => (
+                  {selectedFiles?.map((file, index) => (
                     <li key={index}>
                       {/* Display file name */}
-                      {file.file && (
+                      {file?.file && (
                         <img
                           src={`${file.file}`}
                           style={{
@@ -189,7 +189,7 @@ const FileUpload = () => {
                           }}
                         />
                       )}
-                      {file.original_name}
+                      {file?.original_name}
 
                       <Button
                         onClick={() => handleNotUploadedFileDelete(file.id)}

@@ -97,7 +97,7 @@ const LoginPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: email.trim(), password }),
-        }
+        },
       );
 
       let data = {};
@@ -153,7 +153,7 @@ const LoginPage = () => {
     }
 
     window.location.href = `/otp-verification?email=${encodeURIComponent(
-      email
+      email,
     )}`;
   };
 

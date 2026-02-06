@@ -40,7 +40,7 @@ const DashboardFilterTasks = (props) => {
 
     // Use UTC year/month/day and set time to 00:00:00 UTC
     return new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0)
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0),
     ).toISOString();
   };
 
@@ -60,7 +60,7 @@ const DashboardFilterTasks = (props) => {
   const handleSubmitDate = () => {
     getUpcomingTasks(
       toUtcMidnightISOString(date.start),
-      toUtcMidnightISOString(date.end)
+      toUtcMidnightISOString(date.end),
     );
   };
 
@@ -69,7 +69,7 @@ const DashboardFilterTasks = (props) => {
       <div className="task-blocks__statistic-box">
         <div className="task-blocks__statistic-box__text">
           <h3>{title}</h3>
-          <p style={{ color: "#FF8D28" }}>{upcomingTasks}</p>
+          <p style={{ color: "#FF8D28", fontSize: "22px" }}>{upcomingTasks}</p>
         </div>
         <div className="task-blocks__statistic-box__date">
           <DatePicker

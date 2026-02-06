@@ -6,19 +6,11 @@ const theme = createTheme(
   {
     direction: "rtl",
     typography: {
-      fontFamily: [
-        "Vazirmatn",
-        "system-ui",
-        "-apple-system",
-        "BlinkMacSystemFont",
-        "Segoe UI",
-        "Roboto",
-        "sans-serif",
-      ].join(","),
+      fontFamily: ["Yekan"].join(","),
     },
   },
   coreFaIR,
-  pickersFaIR
+  pickersFaIR,
 );
 
 export default theme;
